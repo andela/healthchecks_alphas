@@ -1,1 +1,1 @@
-web:  gunicorn hc-alphas-py2.wsgi --log-file -
+web:  gunicorn hc.wsgi --log-file -
