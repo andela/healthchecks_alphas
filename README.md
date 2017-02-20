@@ -80,18 +80,6 @@ following in it, changing it as neccessary:
         }
     }
 
-For MySQL:
-
-    DATABASES = {
-        'default': {
-            'ENGINE':   'django.db.backends.mysql',
-            'NAME':     'your-database-name-here',
-            'USER':     'your-database-user-here',
-            'PASSWORD': 'your-database-password-here',
-            'TEST': {'CHARSET': 'UTF8'}
-        }
-    }
-
 You can also use `hc/local_settings.py` to read database
 configuration from environment variables like so:
 
