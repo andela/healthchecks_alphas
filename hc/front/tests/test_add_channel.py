@@ -37,5 +37,16 @@ class AddChannelTestCase(BaseTestCase):
             r = self.client.get(url)
             self.assertContains(r, "Integration Settings", status_code=200)
 
-    ### Test that the team access works
+    def test_team_access_with_invite(self):
+        ''' Test that the team access works '''
+        # Log Alice in
+        self.client.login(username="alice@example.org", password="password")
+
+        # Create POST data to send to profile view function
+        post_data = {"invite_team_member": "1", "email": "bob@example.org"}
+        r = self.client.post("/accounts/profile/", post_data)
+        assert r.status_code == 200
+
+    
+    
     ### Test that bad kinds don't work
