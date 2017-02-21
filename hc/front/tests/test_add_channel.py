@@ -47,6 +47,13 @@ class AddChannelTestCase(BaseTestCase):
         r = self.client.post("/accounts/profile/", post_data)
         assert r.status_code == 200
 
-    
-    
+    def test_team_access_with_set_team_name(self):
+        ''' Test that the team access works with set team name '''
+        # Log in as Alice
+        self.client.login(username="alice@example.org", password="password")
+        post_data = {"set_team_name": "1", "team_name": "Alphas"}
+        r = self.client.post("/accounts/profile/", post_data)
+        assert r.status_code == 200
+
+
     ### Test that bad kinds don't work
