@@ -35,6 +35,8 @@ class ListChecksTestCase(BaseTestCase):
         r = self.get()
         ### Assert the response status code
 
+        self.assertEqual(200, r.status_code)
+
         doc = r.json()
         self.assertTrue("checks" in doc)
 
@@ -42,6 +44,8 @@ class ListChecksTestCase(BaseTestCase):
         ### Assert the expected length of checks
         ### Assert the checks Alice 1 and Alice 2's timeout, grace, ping_url, status,
         ### last_ping, n_pings and pause_url
+        self.assertEqual(2, len(checks))
+        # self.assertEqual(self.a1.timeout, 3600)
 
     def test_it_shows_only_users_checks(self):
         bobs_check = Check(user=self.bob, name="Bob 1")

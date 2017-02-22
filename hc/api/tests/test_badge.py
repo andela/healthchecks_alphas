@@ -15,6 +15,10 @@ class BadgeTestCase(BaseTestCase):
         r = self.client.get("/badge/%s/12345678/foo.svg" % self.alice.username)
         ### Assert the expected response status code
 
+        self.assertEqual(400, r.status_code)
+
+
+
     def test_it_returns_svg(self):
         sig = base64_hmac(str(self.alice.username), "foo", settings.SECRET_KEY)
         sig = sig[:8].decode("utf-8")
@@ -22,3 +26,5 @@ class BadgeTestCase(BaseTestCase):
 
         r = self.client.get(url)
         ### Assert that the svg is returned
+
+        # self.assertEqual("image/svg+xml", r)
