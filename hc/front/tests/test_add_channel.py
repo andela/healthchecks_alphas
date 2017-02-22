@@ -37,23 +37,35 @@ class AddChannelTestCase(BaseTestCase):
             r = self.client.get(url)
             self.assertContains(r, "Integration Settings", status_code=200)
 
-    def test_team_access_with_invite(self):
+    def test_team_access_using_invite(self):
         ''' Test that the team access works '''
         # Log Alice in
         self.client.login(username="alice@example.org", password="password")
 
         # Create POST data to send to profile view function
-        post_data = {"invite_team_member": "1", "email": "bob@example.org"}
-        r = self.client.post("/accounts/profile/", post_data)
+        form = {"invite_team_member": "1", "email": "bob@example.org"}
+        r = self.client.post("/accounts/profile/", form)
         assert r.status_code == 200
 
-    def test_team_access_with_set_team_name(self):
+    def test_team_access_using_set_team_name(self):
         ''' Test that the team access works with set team name '''
         # Log in as Alice
         self.client.login(username="alice@example.org", password="password")
-        post_data = {"set_team_name": "1", "team_name": "Alphas"}
-        r = self.client.post("/accounts/profile/", post_data)
+        form = {"set_team_name": "1", "team_name": "Alphas"}
+        r = self.client.post("/accounts/profile/", form)
         assert r.status_code == 200
 
+    def test_bad_kinds_dont_work(self):
+        ''' Test that bad kinds don't work '''
+        # Log in as Alice
+        self.client.login(username="alice@example.org", password="password")
 
-    ### Test that bad kinds don't work
+        # A random string to use as kind
+        kind = "raqwertyuiop654321"
+
+        url = "/integrations/add/"
+        form = {"kind": kind, "value": "alice@example.org"}
+        r = self.client.post(url, form)
+        assert r.status_code == 400
+
+
