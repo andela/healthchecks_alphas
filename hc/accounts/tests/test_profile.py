@@ -1,5 +1,5 @@
 from django.core import mail
-
+from hc.accounts.models import Profile
 from hc.test import BaseTestCase
 from hc.accounts.models import Member
 from hc.api.models import Check
@@ -17,9 +17,12 @@ class ProfileTestCase(BaseTestCase):
         # profile.token should be set now
         self.alice.profile.refresh_from_db()
         token = self.alice.profile.token
-        ### Assert that the token is set
+        # Assert that the token is set
+
+        self.assertEqual(token, Profile.objects.get(user=self.alice).token)
 
         ### Assert that the email was sent and check email content
+
 
     def test_it_sends_report(self):
         check = Check(name="Test Check", user=self.alice)
@@ -77,7 +80,6 @@ class ProfileTestCase(BaseTestCase):
 
     def test_set_team_name_checks_team_access_allowed_flag(self):
         self.client.login(username="charlie@example.org", password="password")
-
         form = {"set_team_name": "1", "team_name": "Charlies Team"}
         r = self.client.post("/accounts/profile/", form)
         assert r.status_code == 403
@@ -107,4 +109,9 @@ class ProfileTestCase(BaseTestCase):
         # Expect only Alice's tags
         self.assertNotContains(r, "bobs-tag.svg")
 
-    ### Test it creates and revokes API key
+    # Test it creates and revokes API key
+    def test_it_creates_and_revokes(self):
+        self.profile = Profile(user=self.bob, api_key="token12345")
+        self.assertEqual(len(self.profile.api_key), 10)
+        self.profile = Profile(user=self.bob, api_key="")
+        self.assertEqual(len(self.profile.api_key), 0)
