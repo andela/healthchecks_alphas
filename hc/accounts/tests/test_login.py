@@ -32,10 +32,10 @@ class LoginTestCase(BaseTestCase):
                       mail.outbox[0].body)
         # Assert that check is associated with the new user
 
-    def check_associate_new_user(self):
-        check = Check(name="mycheck", user='alice')
+    def test_check_associate_new_user(self):
+        check = Check(name="mycheck", user=self.alice)
         check.save()
-        self.assertEqual(check.user, 'alice')
+        self.assertEqual(check.user, self.alice)
 
     def test_it_pops_bad_link_from_session(self):
         self.client.session["bad_link"] = True
