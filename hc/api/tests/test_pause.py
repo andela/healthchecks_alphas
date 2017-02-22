@@ -14,6 +14,8 @@ class PauseTestCase(BaseTestCase):
 
         ### Assert the expected status code and check's status
 
+        self.assertEqual(r.status_code, 200)
+
     def test_it_validates_ownership(self):
         check = Check(user=self.bob, status="up")
         check.save()
