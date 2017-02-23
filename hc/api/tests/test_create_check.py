@@ -78,4 +78,11 @@ class CreateCheckTestCase(BaseTestCase):
                   expected_error="name is not a string")
 
     ### Test for the assignment of channels
+    def test_for_assignment_of_channels(self):
+        channel = Channel(user=self.alice, kind="pushbullet", value="test-token")
+        channel.save()
+
+        self.assertEquals(channel.kind, "pushbullet")
+        self.assertEquals(channel.value, "test-token")
+
     ### Test for the 'timeout is too small' and 'timeout is too large' errors

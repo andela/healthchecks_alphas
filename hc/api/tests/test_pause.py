@@ -27,3 +27,26 @@ class PauseTestCase(BaseTestCase):
         self.assertEqual(r.status_code, 400)
 
         ### Test that it only allows post requests
+        r1 = self.client.get(url, "", content_type="application/json",
+                             HTTP_X_API_KEY="abc")
+
+        self.assertEqual(r1.status_code, 405)
+
+        r2 = self.client.put(url, "", content_type="application/json",
+                             HTTP_X_API_KEY="abc")
+
+        self.assertEqual(r2.status_code, 405)
+
+        r3 = self.client.patch(url, "", content_type="application/json",
+                             HTTP_X_API_KEY="abc")
+
+        self.assertEqual(r3.status_code, 405)
+
+        r4 = self.client.delete(url, "", content_type="application/json",
+                             HTTP_X_API_KEY="abc")
+
+        self.assertEqual(r4.status_code, 405)
+
+
+        
+        
