@@ -86,3 +86,16 @@ class CreateCheckTestCase(BaseTestCase):
         self.assertEquals(channel.value, "test-token")
 
     ### Test for the 'timeout is too small' and 'timeout is too large' errors
+    def test_timeout_too_small_and_too_large(self):
+        r = self.post({
+            "api_key": "abc",
+            "name": "Foo",
+            "tags": "bar,baz",
+            "timeout": 3600,
+            "grace": 60
+        })
+
+        check = Check.objects.get()
+
+        self.assertGreater(check.timeout.total_seconds(), 360)
+        self.assertLess(check.timeout.total_seconds(), 36000)
