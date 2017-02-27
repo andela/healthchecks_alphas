@@ -136,16 +136,16 @@ STATICFILES_FINDERS = (
 )
 COMPRESS_OFFLINE = True
 
-EMAIL_BACKEND = "djmail.backends.default.EmailBackend"
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'samblue@gmail.com' #my gmail username
-EMAIL_HOST_PASSWORD = 'happydays1200' #my gmail password
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+DJMAIL_REAL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = bool(os.environ.get("EMAIL_USE_TLS"))
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT"))
 DEFAULT_FROM_EMAIL = "HealthChecks <healthchecks.io>"
 
 
-ADMINS = [('Justin', EMAIL_HOST_USER)]
+ADMINS = [('Superadmin', EMAIL_HOST_USER)]
 MANAGERS = ADMINS
 
 
