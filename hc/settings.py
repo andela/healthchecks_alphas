@@ -15,9 +15,9 @@ import warnings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-HOST = "localhost"
+HOST = "https://hc-alphas-py2.herokuapp.com"
 SECRET_KEY = "---"
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['hc-alphas-py2.heroku.com']
 DEFAULT_FROM_EMAIL = 'healthchecks@example.org'
 USE_PAYMENTS = False
@@ -123,7 +123,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-SITE_ROOT = "http://localhost:8000"
+SITE_ROOT = "https://hc-alphas-py2.herokuapp.com"
 PING_ENDPOINT = SITE_ROOT + "/ping/"
 PING_EMAIL_DOMAIN = HOST
 STATIC_URL = '/static/'
