@@ -137,6 +137,17 @@ STATICFILES_FINDERS = (
 COMPRESS_OFFLINE = True
 
 EMAIL_BACKEND = "djmail.backends.default.EmailBackend"
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'samblue@gmail.com' #my gmail username
+EMAIL_HOST_PASSWORD = 'happydays1200' #my gmail password
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "HealthChecks <healthchecks.io>"
+
+
+ADMINS = [('Justin', EMAIL_HOST_USER)]
+MANAGERS = ADMINS
+
 
 # Slack integration -- override these in local_settings
 SLACK_CLIENT_ID = None
