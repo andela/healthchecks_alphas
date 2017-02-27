@@ -19,7 +19,7 @@ HOST = "localhost"
 SECRET_KEY = "---"
 DEBUG = True
 ALLOWED_HOSTS = ['hc-alphas-py2.heroku.com']
-DEFAULT_FROM_EMAIL = 'healthchecks@example.org'
+DEFAULT_FROM_EMAIL = 'HealthChecks <fionanjeri67@gmail.com>'
 USE_PAYMENTS = False
 
 
