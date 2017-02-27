@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 HOST = "localhost"
 SECRET_KEY = "---"
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ['hc-alphas-py2.heroku.com']
 DEFAULT_FROM_EMAIL = 'healthchecks@example.org'
 USE_PAYMENTS = False
