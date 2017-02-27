@@ -3,9 +3,7 @@ __pycache__/
 .coverage
 hc.sqlite
 static-collected
-
 .DS_Store
 static/.DS_Store
-
 .idea
 *.idea
