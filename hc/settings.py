@@ -15,7 +15,7 @@ import warnings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-HOST = "https://hc-alphas-py2.herokuapp.com"
+HOST = "localhost"
 SECRET_KEY = "---"
 DEBUG = False
 ALLOWED_HOSTS = ['hc-alphas-py2.heroku.com']
