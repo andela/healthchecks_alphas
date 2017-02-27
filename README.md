@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/andela/healthchecks_alphas.svg?branch=develop)](https://travis-ci.org/andela/healthchecks_alphas)
+
 # healthchecks
 
 ![Screenshot of Welcome page](/stuff/screenshots/welcome.png?raw=true "Welcome Page")
