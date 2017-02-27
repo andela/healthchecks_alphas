@@ -3,7 +3,6 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'hc',
         'USER': 'postgres',
-        'PASSWORD': 'mungai',
         'TEST': {'CHARSET': 'UTF8'}
     }
 }
