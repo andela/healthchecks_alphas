@@ -29,7 +29,10 @@ class Command(BaseCommand):
 
     def handle_one_run(self):
         now = timezone.now()
-        month_before = now - timedelta(days=30)
+        
+        # set the time to the least amount of duration that a report should
+        # take before being sent again.
+        month_before = now - timedelta(seconds=1)
 
         report_due = Q(next_report_date__lt=now)
         report_not_scheduled = Q(next_report_date__isnull=True)
