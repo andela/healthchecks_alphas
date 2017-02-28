@@ -12,13 +12,14 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 import os
 import warnings
+import sendgrid
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 HOST = "localhost"
 SECRET_KEY = "---"
 DEBUG = True
-ALLOWED_HOSTS = ['hc-alphas-py2.heroku.com']
+ALLOWED_HOSTS = []
 DEFAULT_FROM_EMAIL = 'healthchecks@example.org'
 USE_PAYMENTS = False
 
@@ -136,18 +137,8 @@ STATICFILES_FINDERS = (
 )
 COMPRESS_OFFLINE = True
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_USE_TLS = bool(os.environ.get("EMAIL_USE_TLS"))
-EMAIL_HOST = os.environ.get("EMAIL_HOST")
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = os.environ.get("EMAIL_PORT")
-DEFAULT_FROM_EMAIL = "HealthChecks <healthchecks.io>"
-
-
-ADMINS = [('HealthChecks', EMAIL_HOST_USER)]
-MANAGERS = ADMINS
-
+EMAIL_BACKEND = 'sgbackend.SendGridBackend'
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 
 # Slack integration -- override these in local_settings
 SLACK_CLIENT_ID = None
