@@ -11,12 +11,14 @@ from django.contrib.auth.models import User
 from django.core import signing
 from django.http import HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from hc.accounts.forms import (EmailPasswordForm, InviteTeamMemberForm,
                                RemoveTeamMemberForm, ReportSettingsForm,
                                SetPasswordForm, TeamNameForm)
 from hc.accounts.models import Profile, Member
 from hc.api.models import Channel, Check
 from hc.lib.badges import get_badge_url
+
 
 
 def _make_user(email):
