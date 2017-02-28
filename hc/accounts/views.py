@@ -170,7 +170,6 @@ def profile(request):
                 elif form.cleaned_data['report_duration'] == 'monthly':
                     profile.report_duration = REPORT_DURATIONS[2][0]
                 else:
-                    print ("Bad Request")
                     return HttpResponseBadRequest()
                 
                 profile.save()
