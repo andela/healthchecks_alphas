@@ -159,18 +159,20 @@ def profile(request):
         elif "update_reports_allowed" in request.POST:
             form = ReportSettingsForm(request.POST)
             if form.is_valid():
+                print form.cleaned_data
                 profile.reports_allowed = True
-                if form.cleaned_data['duration'] == 'never':
+                if form.cleaned_data['report_duration'] == 'never':
                     profile.reports_allowed = False
-                elif form.cleaned_data['duration'] == 'daily':
+                elif form.cleaned_data['report_duration'] == 'daily':
                     profile.report_duration = REPORT_DURATIONS[0][0]
-                elif form.cleaned_data['duration'] == 'weekly':
+                elif form.cleaned_data['report_duration'] == 'weekly':
                     profile.report_duration = REPORT_DURATIONS[1][0]
-                elif form.cleaned_data['duration'] == 'monthly':
+                elif form.cleaned_data['report_duration'] == 'monthly':
                     profile.report_duration = REPORT_DURATIONS[2][0]
                 else:
+                    print ("Bad Request")
                     return HttpResponseBadRequest()
-                profile.reports_allowed = form.cleaned_data["reports_allowed"]
+                
                 profile.save()
                 messages.success(request, "Your settings have been updated!")
         elif "invite_team_member" in request.POST:
