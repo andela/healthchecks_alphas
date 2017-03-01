@@ -16,7 +16,7 @@ def num_pinged_checks(profile):
 
 class Command(BaseCommand):
     help = 'Send due monthly reports'
-    tmpl = "Sending monthly report to %s"
+    tmpl = "Sending %s report to %s"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -43,7 +43,12 @@ class Command(BaseCommand):
         sent = 0
         for profile in q:
             if num_pinged_checks(profile) > 0:
-                self.stdout.write(self.tmpl % profile.user.email)
+                period = "monthly"
+                if profile.report_duration == 1:
+                    period = "daily"
+                elif profile.report_duration == 7:
+                    period =  "weekly"
+                self.stdout.write(self.tmpl % (period, profile.user.email))
                 profile.send_report()
                 sent += 1
 
