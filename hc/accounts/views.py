@@ -47,7 +47,6 @@ def _associate_demo_check(request, user):
         # Only associate demo check if it doesn't have an owner already.
         if check.user is None:
             check.user = user
-            check.last_ping = timezone.now()
             check.save()
 
             check.assign_all_channels()
