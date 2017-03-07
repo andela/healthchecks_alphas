@@ -16,7 +16,7 @@ class ProfileAdmin(admin.ModelAdmin):
         }
 
     list_display = ("id", "users", "reports_allowed", "next_report_date",
-                    "ping_log_limit")
+                    "ping_log_limit", "report_duration")
     search_fields = ["id", "user__email"]
     list_filter = ("reports_allowed", "team_access_allowed",
                    "next_report_date")

@@ -22,16 +22,25 @@
     <div class="col-sm-6">
         <div class="panel panel-default">
             <div class="panel-body settings-block">
-                <form method="post">
+                <form method="post" id="duration_form">
                     {% csrf_token %}
-                    <h2>Monthly Reports</h2>
-                    <label>
-                        <input
-                            name="reports_allowed"
-                            type="checkbox"
-                            {% if profile.reports_allowed %} checked {% endif %}>
-                        Each month send me a summary of my checks
-                    </label>
+                    <h2>Reports</h2>
+                    <p>Select how frequently you would like to receive your reports:</p>
+                    <input type="radio" name="report_duration" value="never"
+                    {% if not profile.reports_allowed %} checked {% endif %}> Never<br>
+                    <input type="radio" name="report_duration" value="daily"
+                    {% if profile.report_duration == 1 %} checked {% endif %}> Daily<br>
+                    <input type="radio" name="report_duration" value="weekly"
+                    {% if profile.report_duration == 7 %} checked {% endif %}> Weekly<br>
+                    <input type="radio" name="report_duration" value="monthly"
+                    {% if profile.report_duration == 30 %} checked {% endif %}> Monthly<br>
+                    <!-- select form="durations_form" selected="selected" name="report_duration" class="selectpicker" data-style="btn-primary">
+                        <option value="never">Never</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select> -->
+
                     <button
                         name="update_reports_allowed"
                         type="submit"

@@ -12,6 +12,11 @@ from django.urls import reverse
 from django.utils import timezone
 from hc.lib import emails
 
+REPORT_DURATIONS = (
+    (1, "Daily"),
+    (7, "Weekly"),
+    (30, "Monthly")
+)
 
 class Profile(models.Model):
     # Owner:
@@ -24,7 +29,9 @@ class Profile(models.Model):
     token = models.CharField(max_length=128, blank=True)
     api_key = models.CharField(max_length=128, blank=True)
     current_team = models.ForeignKey("self", null=True)
-
+    report_duration = models.IntegerField(choices=REPORT_DURATIONS,
+                                       default=30)
+    
     def __str__(self):
         return self.team_name or self.user.email
 
@@ -56,7 +63,7 @@ class Profile(models.Model):
     def send_report(self):
         # reset next report date first:
         now = timezone.now()
-        self.next_report_date = now + timedelta(days=30)
+        self.next_report_date = now + timedelta(days=self.report_duration)
         self.save()
 
         token = signing.Signer().sign(uuid.uuid4())
