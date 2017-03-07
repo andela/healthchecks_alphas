@@ -29,7 +29,7 @@ class ChecksAdmin(admin.ModelAdmin):
 
     search_fields = ["name", "user__email", "code"]
     list_display = ("id", "name_tags", "created", "code", "status", "email",
-                    "last_ping", "n_pings")
+                    "last_ping", "n_pings", "nag_interval")
     list_select_related = ("user", )
     list_filter = ("status", OwnershipListFilter, "last_ping")
     actions = ["send_alert"]
