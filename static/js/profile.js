@@ -11,3 +11,9 @@ $(function() {
     });
 
 });
+
+var foo = document.getElementById("notifications-allowed-list");
+Sortable.create(foo, { group: "omega" });
+
+var bar = document.getElementById("notifications-not-allowed-list");
+Sortable.create(bar, { group: "omega" });
