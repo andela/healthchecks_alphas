@@ -124,7 +124,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-SITE_ROOT = "http://127.0.0.1:8000"
+SITE_ROOT = "https://hc-alphas-py2.herokuapp.com"
 PING_ENDPOINT = SITE_ROOT + "/ping/"
 PING_EMAIL_DOMAIN = HOST
 STATIC_URL = '/static/'
@@ -138,7 +138,7 @@ STATICFILES_FINDERS = (
 COMPRESS_OFFLINE = True
 
 EMAIL_BACKEND = 'sgbackend.SendGridBackend'
-SENDGRID_API_KEY = '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'
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 
 # Slack integration -- override these in local_settings
 SLACK_CLIENT_ID = None
