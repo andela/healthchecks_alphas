@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.urls import reverse
-from hc.accounts.models import Profile
+from hc.accounts.models import Profile, Member
 from hc.api.models import Channel, Check
 
 
@@ -31,6 +31,17 @@ class ProfileAdmin(admin.ModelAdmin):
 
     users.allow_tags = True
 
+@admin.register(Member)
+class MemberAdmin(admin.ModelAdmin):
+
+    class Media:
+        css = {
+            'all': ('css/admin/profiles.css',)
+        }
+
+    list_display = ("team", "user")
+    search_fields = ["team", "user"]
+    list_filter = ("team", "user")
 
 class HcUserAdmin(UserAdmin):
     actions = ["send_report"]
@@ -73,6 +84,7 @@ class HcUserAdmin(UserAdmin):
             user.profile.send_report()
 
         self.message_user(request, "%d email(s) sent" % qs.count())
+
 
 
 admin.site.unregister(User)

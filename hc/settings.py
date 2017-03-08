@@ -136,9 +136,9 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 COMPRESS_OFFLINE = True
-
-EMAIL_BACKEND = 'sgbackend.SendGridBackend'
-SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+EMAIL_BACKEND = "djmail.backends.default.EmailBackend"
+# EMAIL_BACKEND = 'sgbackend.SendGridBackend'
+# SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 
 # Slack integration -- override these in local_settings
 SLACK_CLIENT_ID = None
