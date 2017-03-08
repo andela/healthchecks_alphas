@@ -17,7 +17,7 @@ def _pg(cursor):
     DROP TRIGGER IF EXISTS update_alert_after ON api_check;
 
     CREATE TRIGGER update_alert_after
-    BEFORE INSERT OR UPDATE OF last_ping, timeout, grace  ON api_check
+    BEFORE INSERT OR UPDATE OF last_ping, timeout, grace, nag_interval ON api_check
     FOR EACH ROW EXECUTE PROCEDURE update_alert_after();
     """)
 
@@ -43,7 +43,7 @@ def _sqlite(cursor):
 
     cursor.execute("""
     CREATE TRIGGER update_alert_after
-    AFTER UPDATE OF last_ping, timeout, grace ON api_check
+    AFTER UPDATE OF last_ping, timeout, grace, nag_interval ON api_check
     FOR EACH ROW BEGIN
         UPDATE api_check
         SET alert_after =
