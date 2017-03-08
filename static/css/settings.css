@@ -37,4 +37,9 @@ li {
 
 .move-cursor {
     cursor: move;
-} 
+}
+
+#set-priority-list-modal ul {
+    min-height: 30px;
+    background: #EEE;
+}

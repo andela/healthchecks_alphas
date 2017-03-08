@@ -10,6 +10,9 @@ from django.core import signing
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from django.dispatch import receiver
+from django.db.models import Max
+
 from hc.lib import emails
 
 REPORT_DURATIONS = (
@@ -31,6 +34,7 @@ class Profile(models.Model):
     current_team = models.ForeignKey("self", null=True)
     report_duration = models.IntegerField(choices=REPORT_DURATIONS,
                                        default=30)
+    prioritize_notifications = models.BooleanField(default=False)
     
     def __str__(self):
         return self.team_name or self.user.email
@@ -93,3 +97,15 @@ class Profile(models.Model):
 class Member(models.Model):
     team = models.ForeignKey(Profile)
     user = models.ForeignKey(User)
+    notify = models.BooleanField(default=True)
+    priority = models.IntegerField(default=1)
+
+@receiver(models.signals.post_save, sender=Member)
+def execute_after_save(sender, instance, created, *args, **kwargs):
+    if created:
+        maximum_priority = Member.objects.all().aggregate(Max('priority'))
+        print("\n\n\n***** %s ***** \n\n\n" %maximum_priority)
+        instance.priority=maximum_priority['priority__max']+1
+        instance.save()
+
+

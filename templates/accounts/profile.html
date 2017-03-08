@@ -177,51 +177,7 @@
         </form>
     </div>
 </div>
-<div id="remove-team-member-modal" class="modal fade">
-    <div class="modal-dialog">
-        <form id="remove-team-member-form" method="post">
-            {% csrf_token %}
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="remove-check-title">Remove Team Member</h4>
-                </div>
-                <div class="modal-body">
-                    <p>You are about to remove <span id="rtm-email"></span> from the team.</p>
-                    <p>Are you sure?</p>
-                    <input type="hidden" name="email" id="remove-team-member-email" />
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" name="remove_team_member" class="btn btn-danger">Remove Member from Team</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 
-<div id="remove-team-member-modal" class="modal fade">
-    <div class="modal-dialog">
-        <form id="remove-team-member-form" method="post">
-            {% csrf_token %}
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="remove-check-title">Remove Team Member</h4>
-                </div>
-                <div class="modal-body">
-                    <p>You are about to remove <span id="rtm-email"></span> from the team.</p>
-                    <p>Are you sure?</p>
-                    <input type="hidden" name="email" id="remove-team-member-email" />
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" name="remove_team_member" class="btn btn-danger">Remove Member from Team</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 
 <div id="invite-team-member-modal" class="modal fade">
     <div class="modal-dialog">
@@ -269,11 +225,8 @@
                                     <h2>Notifications Allowed</h2>
                                     <div class="move-cursor">
                                     <ul id="notifications-allowed-list" class="list-group">
-                                        <li class="list-group-item">{{ profile.user.email }}
-                                            <span class="pull-right">Owner</span>
-                                        </li>
                                         {% for member in profile.member_set.all %} 
-                                        {% if member.user.email != profile.user.email %}
+                                        {% if member.user.email != profile.user.email and member.notify%}
                                         <li class="list-group-item">{{ member.user.email }}
                                             <span class="pull-right">Member</span>
                                         </li>
@@ -293,9 +246,13 @@
                                         <h2>Notifications Blocked</h2>
                                         <div class="move-cursor">
                                         <ul id="notifications-not-allowed-list" class="list-group">
-                                            <li class="list-group-item">item 4</li>
-                                            <li class="list-group-item">item 5</li>
-                                            <li class="list-group-item">item 6</li>
+                                            {% for member in profile.member_set.all %}
+                                            {% if member.user.email != profile.user.email and not member.notify%}
+                                            <li class="list-group-item">{{ member.user.email }}
+                                                <span class="pull-right">Member</span>
+                                            </li>
+                                            {% endif %}
+                                            {% endfor %}
                                         </ul>
                                         </div>
                                         <!--<button type="submit" name="set_password" class="btn btn-default pull-right">Set Password</button>-->

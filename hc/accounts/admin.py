@@ -39,9 +39,9 @@ class MemberAdmin(admin.ModelAdmin):
             'all': ('css/admin/profiles.css',)
         }
 
-    list_display = ("team", "user")
-    search_fields = ["team", "user"]
-    list_filter = ("team", "user")
+    list_display = ("team", "user", "notify", "priority")
+    search_fields = ["team", "user", "notify", "priority"]
+    list_filter = ("team", "user", "notify", "priority")
 
 class HcUserAdmin(UserAdmin):
     actions = ["send_report"]
