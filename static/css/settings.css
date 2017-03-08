@@ -34,3 +34,7 @@ li {
         width: 990px;
     }
 }
+
+.move-cursor {
+    cursor: move;
+} 

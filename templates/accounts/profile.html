@@ -25,9 +25,9 @@
                     <h2>Reports</h2>
                     <p>Select how frequently you would like to receive your reports:</p>
                     <input type="radio" name="report_duration" value="never" {% if not profile.reports_allowed %} checked {% endif %}> Never<br>
-                    <input type="radio" name="report_duration" value="daily" {% if profile.report_duration==1 %} checked {% endif %}> Daily<br>
-                    <input type="radio" name="report_duration" value="weekly" {% if profile.report_duration==7 %} checked {% endif %}> Weekly<br>
-                    <input type="radio" name="report_duration" value="monthly" {% if profile.report_duration==30 %} checked {% endif %}> Monthly<br>
+                    <input type="radio" name="report_duration" value="daily" {% if profile.report_duration == 1 %} checked {% endif %}> Daily<br>
+                    <input type="radio" name="report_duration" value="weekly" {% if profile.report_duration == 7 %} checked {% endif %}> Weekly<br>
+                    <input type="radio" name="report_duration" value="monthly" {% if profile.report_duration == 30 %} checked {% endif %}> Monthly<br>
                     <!-- select form="durations_form" selected="selected" name="report_duration" class="selectpicker" data-style="btn-primary">
                         <option value="never">Never</option>
                         <option value="daily">Daily</option>
@@ -53,6 +53,9 @@
             </div>
         </div>
     </div>
+</div>
+    
+<div class="row">
     <div class="col-sm-6">
         <div class="panel panel-default">
             <div class="panel-body settings-block">
@@ -99,6 +102,7 @@
             </div>
         </div>
     </div>
+
     <div class="col-sm-6">
         <div class="panel panel-default">
             <div class="panel-body settings-block">
@@ -121,6 +125,7 @@
         </div>
     </div>
 </div>
+
 {% if badge_urls %}
 <div class="row">
     <div class="col-sm-12">
@@ -147,6 +152,7 @@
     </div>
 </div>
 {% endif %}
+
 <div id="revoke-api-key-modal" class="modal">
     <div class="modal-dialog">
         <form id="revoke-api-key-form" method="post">
@@ -193,6 +199,7 @@
         </form>
     </div>
 </div>
+
 <div id="remove-team-member-modal" class="modal fade">
     <div class="modal-dialog">
         <form id="remove-team-member-form" method="post">
@@ -215,6 +222,7 @@
         </form>
     </div>
 </div>
+
 <div id="invite-team-member-modal" class="modal fade">
     <div class="modal-dialog">
         <form method="post" class="form-horizontal">
@@ -244,6 +252,7 @@
         </form>
     </div>
 </div>
+
 <div id="set-priority-list-modal" class="modal fade">
     <div class="modal-dialog">
         <form method="post">
@@ -258,16 +267,20 @@
                                 <div class="panel-body settings-block">
                                     {% csrf_token %}
                                     <h2>Notifications Allowed</h2>
-                                    <ul id="notifications-allowed-list">
-                                        <li>{{ profile.user.email }}
+                                    <div class="move-cursor">
+                                    <ul id="notifications-allowed-list" class="list-group">
+                                        <li class="list-group-item">{{ profile.user.email }}
                                             <span class="pull-right">Owner</span>
                                         </li>
-                                        {% for member in profile.member_set.all %} {% if member.user.email != profile.user.email %}
-                                        <li>{{ member.user.email }}
+                                        {% for member in profile.member_set.all %} 
+                                        {% if member.user.email != profile.user.email %}
+                                        <li class="list-group-item">{{ member.user.email }}
                                             <span class="pull-right">Member</span>
                                         </li>
-                                        {% endif %} {% endfor %}
+                                        {% endif %} 
+                                        {% endfor %}
                                     </ul>
+                                    </div>
                                     <!--<button name="update_reports_allowed" type="submit" class="btn btn-default pull-right">Save</button>-->
                                 </div>
                             </div>
@@ -278,11 +291,13 @@
                                     <form method="post">
                                         {% csrf_token %}
                                         <h2>Notifications Blocked</h2>
-                                        <ul id="notifications-not-allowed-list">
-                                            <li>item 4</li>
-                                            <li>item 5</li>
-                                            <li>item 6</li>
+                                        <div class="move-cursor">
+                                        <ul id="notifications-not-allowed-list" class="list-group">
+                                            <li class="list-group-item">item 4</li>
+                                            <li class="list-group-item">item 5</li>
+                                            <li class="list-group-item">item 6</li>
                                         </ul>
+                                        </div>
                                         <!--<button type="submit" name="set_password" class="btn btn-default pull-right">Set Password</button>-->
                                     </form>
                                 </div>
@@ -306,17 +321,18 @@
                                     {% endfor %}
                                 </ul>-->
                     <button name="notifications_allowed" type="submit" class="btn btn-default pull-right">Save Notifications Settings
-                                </button>
+                    </button>
                     <!--<br>
-                            <br> {% else %}
-                                <p>
-                                    <strong>Invite team members to your account.</strong>
-                                </p>
-                                <p>
-                                    Share access to your checks and configured integrations without having to share a login.
-                                </p>
-                            {% endif %}
-                        </div>
+                            <br>--> 
+                    {% else %}
+                        <p>
+                            <strong>Invite team members to your account.</strong>
+                        </p>
+                        <p>
+                            Share access to your checks and configured integrations without having to share a login.
+                        </p>
+                    {% endif %}
+                        <!--</div>
                     </div>
                 </div>
             </div>-->
