@@ -45,7 +45,7 @@ def my_checks(request):
             if status == "down":
                 down_tags.add(tag)
             elif status == "nag":
-                nag_tags.add(tag)
+                nag_tags.add( )
             elif check.in_grace_period():
                 grace_tags.add(tag)
 
