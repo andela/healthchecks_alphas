@@ -58,7 +58,7 @@ $(function () {
         $("#update-timeout-timeout").val(rounded);
     });
 
-
+    // 3456000 - 40 days
     var graceSlider = document.getElementById("grace-slider");
     noUiSlider.create(graceSlider, {
         start: [20],
@@ -91,16 +91,24 @@ $(function () {
     noUiSlider.create(nagIntervalSlider, {
         start: [20],
         connect: "lower",
+        // range: {
+        //     'min': [60, 60],
+        //     '33%': [3600, 3600],
+        //     '66%': [86400, 86400],
+        //     '83%': [604800, 604800],
+        //     'max': 2592000,
+        // },
         range: {
             'min': [60, 60],
-            '33%': [3600, 3600],
-            '66%': [86400, 86400],
-            '83%': [604800, 604800],
-            'max': 2592000,
+            '20%': [3600, 3600],
+            '40%': [86400, 86400],
+            '60%': [604800, 604800],
+            '80%': [2592000, 2592000],
+            'max': 3456000,
         },
         pips: {
             mode: 'values',
-            values: [60, 1800, 3600, 43200, 86400, 604800, 2592000],
+            values: [60, 3600, 86400, 604800, 2592000, 3456000],
             density: 4,
             format: {
                 to: secsToText,
