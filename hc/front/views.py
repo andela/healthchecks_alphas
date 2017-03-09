@@ -63,6 +63,43 @@ def my_checks(request):
     return render(request, "front/my_checks.html", ctx)
 
 
+def failed_jobs(request):
+    q = Check.objects.filter(user=request.team.user).filter(
+        status="down").order_by("created")
+    checks = list(q)
+    print("************",checks, "***********")
+
+    counter = Counter()
+    down_tags, grace_tags, nag_tags = set(), set(), set()
+    for check in checks:
+        status = check.get_status()
+        for tag in check.tags_list():
+            if tag == "":
+                continue
+
+            counter[tag] += 1
+
+            if status == "down":
+                down_tags.add(tag)
+            elif status == "nag":
+                nag_tags.add(tag)
+            elif check.in_grace_period():
+                grace_tags.add(tag)
+
+    ctx = {
+        "page": "failed-jobs",
+        "checks": checks,
+        "now": timezone.now(),
+        "tags": counter.most_common(),
+        "down_tags": down_tags,
+        "grace_tags": grace_tags,
+        "nag_tags": nag_tags,
+        "ping_endpoint": settings.PING_ENDPOINT
+    }
+
+    return render(request, "front/failed_jobs.html", ctx)
+
+
 def _welcome_check(request):
     check = None
     if "welcome_code" in request.session:
