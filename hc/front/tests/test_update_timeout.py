@@ -11,7 +11,7 @@ class UpdateTimeoutTestCase(BaseTestCase):
 
     def test_it_works(self):
         url = "/checks/%s/timeout/" % self.check.code
-        payload = {"timeout": 3600, "grace": 60}
+        payload = {"timeout": 3600, "grace": 60, "nag_interval": 3600}
 
         self.client.login(username="alice@example.org", password="password")
         r = self.client.post(url, data=payload)
@@ -23,7 +23,7 @@ class UpdateTimeoutTestCase(BaseTestCase):
 
     def test_team_access_works(self):
         url = "/checks/%s/timeout/" % self.check.code
-        payload = {"timeout": 7200, "grace": 60}
+        payload = {"timeout": 7200, "grace": 60, "nag_interval": 3600}
 
         # Logging in as bob, not alice. Bob has team access so this
         # should work.
@@ -57,3 +57,18 @@ class UpdateTimeoutTestCase(BaseTestCase):
         self.client.login(username="charlie@example.org", password="password")
         r = self.client.post(url, data=payload)
         assert r.status_code == 403
+
+    def test_timeout_greater_than_30_days(self):
+        url = "/checks/%s/timeout/" % self.check.code
+        payload = {"timeout": 3600, "grace": 5184000, "nag_interval": 5184000}
+
+        self.check.nag_interval = 5184000
+        self.check.grace = 5184000
+
+        self.client.login(username="alice@example.org", password="password")
+        r = self.client.post(url, data=payload)
+        self.assertRedirects(r, "/checks/")
+
+        check = Check.objects.get(code=self.check.code)
+        self.assertEqual(check.nag_interval.total_seconds(), 5184000)
+        self.assertEqual(check.grace.total_seconds(), 5184000)

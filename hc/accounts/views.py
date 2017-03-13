@@ -11,12 +11,14 @@ from django.contrib.auth.models import User
 from django.core import signing
 from django.http import HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from hc.accounts.forms import (EmailPasswordForm, InviteTeamMemberForm,
                                RemoveTeamMemberForm, ReportSettingsForm,
                                SetPasswordForm, TeamNameForm)
-from hc.accounts.models import Profile, Member
+from hc.accounts.models import Profile, Member, REPORT_DURATIONS
 from hc.api.models import Channel, Check
 from hc.lib.badges import get_badge_url
+
 
 
 def _make_user(email):
@@ -132,7 +134,7 @@ def check_token(request, username, token):
 @login_required
 def profile(request):
     profile = request.user.profile
-    # Switch user back to its default team
+    # Switch user back to its default team 
     if profile.current_team_id != profile.id:
         request.team = profile
         profile.current_team_id = profile.id
@@ -156,7 +158,19 @@ def profile(request):
         elif "update_reports_allowed" in request.POST:
             form = ReportSettingsForm(request.POST)
             if form.is_valid():
-                profile.reports_allowed = form.cleaned_data["reports_allowed"]
+                print form.cleaned_data
+                profile.reports_allowed = True
+                if form.cleaned_data['report_duration'] == 'never':
+                    profile.reports_allowed = False
+                elif form.cleaned_data['report_duration'] == 'daily':
+                    profile.report_duration = REPORT_DURATIONS[0][0]
+                elif form.cleaned_data['report_duration'] == 'weekly':
+                    profile.report_duration = REPORT_DURATIONS[1][0]
+                elif form.cleaned_data['report_duration'] == 'monthly':
+                    profile.report_duration = REPORT_DURATIONS[2][0]
+                else:
+                    return HttpResponseBadRequest()
+                
                 profile.save()
                 messages.success(request, "Your settings have been updated!")
         elif "invite_team_member" in request.POST:

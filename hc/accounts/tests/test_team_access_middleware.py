@@ -1,9 +1,9 @@
 from django.contrib.auth.models import User
-from django.test import TestCase
+from hc.test import BaseTestCase
 from hc.accounts.models import Profile
 
 
-class TeamAccessMiddlewareTestCase(TestCase):
+class TeamAccessMiddlewareTestCase(BaseTestCase):
 
     def test_it_handles_missing_profile(self):
         user = User(username="ned", email="ned@example.org")
@@ -14,4 +14,5 @@ class TeamAccessMiddlewareTestCase(TestCase):
         r = self.client.get("/about/")
         self.assertEqual(r.status_code, 200)
 
-        ### Assert the new Profile objects count
+        # Assert the new Profile objects count
+        self.assertEqual(Profile.objects.count(), 3)

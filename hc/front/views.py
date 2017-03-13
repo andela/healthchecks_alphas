@@ -33,7 +33,7 @@ def my_checks(request):
     checks = list(q)
 
     counter = Counter()
-    down_tags, grace_tags = set(), set()
+    down_tags, grace_tags, nag_tags = set(), set(), set()
     for check in checks:
         status = check.get_status()
         for tag in check.tags_list():
@@ -44,6 +44,8 @@ def my_checks(request):
 
             if status == "down":
                 down_tags.add(tag)
+            elif status == "nag":
+                nag_tags.add( )
             elif check.in_grace_period():
                 grace_tags.add(tag)
 
@@ -54,6 +56,7 @@ def my_checks(request):
         "tags": counter.most_common(),
         "down_tags": down_tags,
         "grace_tags": grace_tags,
+        "nag_tags": nag_tags,
         "ping_endpoint": settings.PING_ENDPOINT
     }
 
@@ -164,6 +167,7 @@ def update_timeout(request, code):
     if form.is_valid():
         check.timeout = td(seconds=form.cleaned_data["timeout"])
         check.grace = td(seconds=form.cleaned_data["grace"])
+        check.nag_interval = td(seconds=form.cleaned_data["nag_interval"])
         check.save()
 
     return redirect("hc-checks")
