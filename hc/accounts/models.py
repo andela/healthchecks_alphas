@@ -93,12 +93,15 @@ class Profile(models.Model):
 
         user.profile.send_instant_login_link(self)
 
+    @property
+    def sorted_member_set(self):
+        return self.member_set.order_by('priority')
+
 
 class Member(models.Model):
     team = models.ForeignKey(Profile)
     user = models.ForeignKey(User)
-    notify = models.BooleanField(default=True)
-    priority = models.IntegerField(default=1)
+    priority = models.IntegerField(default=1) # Don't notify if priority is 0 (zero)
 
 @receiver(models.signals.post_save, sender=Member)
 def execute_after_save(sender, instance, created, *args, **kwargs):

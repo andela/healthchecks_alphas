@@ -249,8 +249,8 @@
                                     <h2>Notifications Allowed</h2>
                                     <div class="move-cursor">
                                     <ul id="notifications-allowed-list" class="list-group">
-                                        {% for member in profile.member_set.all %} 
-                                        {% if member.user.email != profile.user.email and member.notify %}
+                                        {% for member in profile.sorted_member_set %}
+                                        {% if member.user.email != profile.user.email and member.priority %}
                                         <li class="list-group-item">{{ member.user.email }}
                                             <input type="hidden" name="email" value="{{ member.user.email }}"/>
                                             <input type="hidden" name="priority" value="{{ member.priority }}"/>
@@ -271,7 +271,7 @@
                                         <div class="move-cursor">
                                         <ul id="notifications-not-allowed-list" class="list-group">
                                             {% for member in profile.member_set.all %}
-                                            {% if member.user.email != profile.user.email and not member.notify%}
+                                            {% if member.user.email != profile.user.email and not member.priority%}
                                             <li class="list-group-item">{{ member.user.email }}
                                                 <input type="hidden" name="email" value="{{ member.user.email }}"/>
                                                 <input type="hidden" name="priority" value="{{ member.priority }}"/>
