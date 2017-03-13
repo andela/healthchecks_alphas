@@ -16,7 +16,6 @@ class MyChecksTestCase(BaseTestCase):
         self.check.last_ping = timezone.now() - td(days=3)
         self.check.status = self.check.get_status()
         self.check.save()
-        print("\n*** alice check: ", self.check.__dict__)
 
         for email in ("alice@example.org", "bob@example.org"):
             self.client.login(username=email,
