@@ -67,7 +67,6 @@ def failed_jobs(request):
     q = Check.objects.filter(user=request.team.user).filter(
         status="down").order_by("created")
     checks = list(q)
-    print("************",checks, "***********")
 
     counter = Counter()
     down_tags, grace_tags, nag_tags = set(), set(), set()
