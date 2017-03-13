@@ -1,5 +1,35 @@
 $(function() {
 
+    var allowed = document.getElementById("notifications-allowed-list");
+    var srt_allowed = Sortable.create(allowed, {
+        group: "omega",
+
+        onUpdate: function(evt){
+            var childs = $(evt.item).parent(allowed).children();
+            childs.each(function(index) {
+                $(this).children("input[name*='priority']").val(index+1);
+            });
+        },
+
+        onAdd: function(evt){
+            var childs = $(evt.item).parent(allowed).children();
+            childs.each(function(index) {
+                $(this).children("input[name*='priority']").val(index+1);
+            });
+        }
+     });
+
+    var blocked = document.getElementById("notifications-not-allowed-list");
+    srt_blocked = Sortable.create(blocked,{
+        group: "omega",
+        onAdd: function(evt){
+                console.log("on Add Not Allowed changed!");
+                console.log(evt.newIndex);
+                console.log(evt.item)
+                $(evt.item).children("input[name*='priority']").val(0);
+            }
+        });
+
     $(".member-remove").click(function() {
         var $this = $(this);
 
@@ -12,8 +42,3 @@ $(function() {
 
 });
 
-var foo = document.getElementById("notifications-allowed-list");
-Sortable.create(foo, { group: "omega" });
-
-var bar = document.getElementById("notifications-not-allowed-list");
-Sortable.create(bar, { group: "omega" });

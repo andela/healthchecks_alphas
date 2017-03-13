@@ -47,7 +47,7 @@ def ping(request, code):
 
 @csrf_exempt
 @check_api_key
-@validate_json(schemas.check)
+# @validate_json(schemas.check)
 def checks(request):
     if request.method == "GET":
         q = Check.objects.filter(user=request.user)

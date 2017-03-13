@@ -1,5 +1,6 @@
 import uuid
 import re
+import pprint
 
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
@@ -9,14 +10,18 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.core import signing
-from django.http import HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponseForbidden, HttpResponseBadRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.csrf import csrf_exempt
+
 from django.utils import timezone
 from hc.accounts.forms import (EmailPasswordForm, InviteTeamMemberForm,
                                RemoveTeamMemberForm, ReportSettingsForm,
                                SetPasswordForm, TeamNameForm)
 from hc.accounts.models import Profile, Member, REPORT_DURATIONS
 from hc.api.models import Channel, Check
+from hc.api import schemas
+from hc.api.decorators import check_api_key, validate_json
 from hc.lib.badges import get_badge_url
 
 
@@ -131,6 +136,9 @@ def check_token(request, username, token):
     return render(request, "accounts/check_token_submit.html")
 
 
+# @csrf_exempt
+# @check_api_key
+# @validate_json(schemas.check)
 @login_required
 def profile(request):
     profile = request.user.profile
@@ -210,6 +218,51 @@ def profile(request):
                 profile.team_name = form.cleaned_data["team_name"]
                 profile.save()
                 messages.success(request, "Team Name updated!")
+
+        elif "save_notification_priorities" in request.POST:
+            if not profile.team_access_allowed:
+                return HttpResponseForbidden()
+            # request.POST
+            pp = pprint.PrettyPrinter(indent=4)
+
+            print("\n\n **** Request JSON ****\n\n\n")
+            pp.pprint(request.POST)
+            print("Priority: ")
+            data = dict(request.POST.iterlists())
+            print([int(i) for i in data.get('priority')])
+            print("email: ")
+            print([str(i) for i in data.get('email')])
+            # print(request.__dict__)
+            print("\n\n **** Request JSON ****\n\n\n")
+            emails = [str(i) for i in data.get('email')]
+            priorities = [int(i) for i in data.get('priority')]
+            priority_dict = dict(zip(emails, priorities))
+
+            for email, priority in priority_dict.iteritems():
+                user = User.objects.get(email=email)
+                members = Member.objects.filter(team=profile,
+                                  user=user)
+                for member in members:
+                    member.priority = priority
+                    member.save()
+
+            # check = Check(user=request.user)
+            # check.name = str(request.json.get("name", ""))
+            # check.tags = str(request.json.get("tags", ""))
+            # if "timeout" in request.json:
+            #     check.timeout = td(seconds=request.json["timeout"])
+            # if "grace" in request.json:
+            #     check.grace = td(seconds=request.json["grace"])
+            #
+            # check.save()
+            #
+            # # This needs to be done after saving the check, because of
+            # # the M2M relation between checks and channels:
+            # if request.json.get("channels") == "*":
+            #     check.assign_all_channels()
+            #
+            # return JsonResponse(check.to_dict(), status=201)
+
 
     tags = set()
     for check in Check.objects.filter(user=request.team.user):
