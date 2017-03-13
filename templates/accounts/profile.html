@@ -240,6 +240,13 @@
             <div class="panel panel-default">
                 <div class="panel-body settings-block">
                     <h2>Priority Notifications</h2>
+                    <p>
+                        <input
+                            name="priority_notifications_allowed"
+                            type="checkbox"
+                            {% if profile.prioritize_notifications %} checked {% endif %}>
+                        Allow Priority Notifications
+                    </p><br>
                     {% if profile.member_set.count %}
                     <div class="row">
                         <div class="col-sm-6">
@@ -293,7 +300,7 @@
                     </div>
                     <!-- Slider -->
                     <div>
-                        <input type="hidden" name="priority-delay" id="update-priority-delay-delay" />
+                        <input type="hidden" name="priority_delay" id="update-priority-delay-delay" />
                         <div class="update-priority-delay-info text-center">
                             <span
                                 class="update-priority-delay-label"

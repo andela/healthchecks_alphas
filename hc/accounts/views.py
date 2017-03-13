@@ -3,6 +3,7 @@ import re
 import pprint
 
 from django.contrib import messages
+from datetime import timedelta as td
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import authenticate
@@ -136,9 +137,6 @@ def check_token(request, username, token):
     return render(request, "accounts/check_token_submit.html")
 
 
-# @csrf_exempt
-# @check_api_key
-# @validate_json(schemas.check)
 @login_required
 def profile(request):
     profile = request.user.profile
@@ -238,13 +236,26 @@ def profile(request):
             priorities = [int(i) for i in data.get('priority')]
             priority_dict = dict(zip(emails, priorities))
 
-            for email, priority in priority_dict.iteritems():
-                user = User.objects.get(email=email)
-                members = Member.objects.filter(team=profile,
-                                  user=user)
-                for member in members:
-                    member.priority = priority
-                    member.save()
+            try:
+                profile.priority_delay = td(seconds =(int(data.get('priority_delay')[0])))
+                checked = data.get('priority_notifications_allowed')
+                if checked:
+                    profile.prioritize_notifications = True
+                else:
+                    profile.prioritize_notifications = False
+
+                profile.save()
+                for email, priority in priority_dict.iteritems():
+                    user = User.objects.get(email=email)
+                    members = Member.objects.filter(team=profile,
+                                      user=user)
+                    for member in members:
+                        member.priority = priority
+                        member.save()
+            except KeyError as e:
+                raise e
+            except Exception as e:
+                raise e
 
             # check = Check(user=request.user)
             # check.name = str(request.json.get("name", ""))
