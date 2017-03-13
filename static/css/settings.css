@@ -43,3 +43,34 @@ li {
     min-height: 30px;
     background: #EEE;
 }
+
+#priority-delay-slider.noUi-connect {
+    background: #228ebc;
+}
+
+#priority-delay-slider.noUi-connect {
+    margin: 20px 50px 80px 50px;
+}
+
+.update-timeout-value {
+    font-size: 22px;
+    display: inline-block;
+    width: 100px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.flex-wrapper {
+  display: flex;
+}
+
+.flex-wrapper .icon {
+    line-height: 39px;
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.flex-wrapper .icon.icon-cancel {
+    color: #d9534f;
+}
+

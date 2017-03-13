@@ -20,6 +20,8 @@ REPORT_DURATIONS = (
     (7, "Weekly"),
     (30, "Monthly")
 )
+DEFAULT_PRIORITY_DELAY = timedelta(hours=1)
+
 
 class Profile(models.Model):
     # Owner:
@@ -35,6 +37,7 @@ class Profile(models.Model):
     report_duration = models.IntegerField(choices=REPORT_DURATIONS,
                                        default=30)
     prioritize_notifications = models.BooleanField(default=False)
+    priority_delay = models.DurationField(default=DEFAULT_PRIORITY_DELAY)
     
     def __str__(self):
         return self.team_name or self.user.email

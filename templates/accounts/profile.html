@@ -246,7 +246,10 @@
                             <div class="panel panel-default">
                                 <div class="panel-body settings-block">
                                     {% csrf_token %}
-                                    <h2>Notifications Allowed</h2>
+                                    <div class="flex-wrapper">
+                                        <span class="icon icon-ok"></span>
+                                        <h4>Notifications Allowed</h4>
+                                    </div>
                                     <div class="move-cursor">
                                     <ul id="notifications-allowed-list" class="list-group">
                                         {% for member in profile.sorted_member_set %}
@@ -267,24 +270,46 @@
                         <div class="col-sm-6">
                             <div class="panel panel-default">
                                 <div class="panel-body settings-block">
-                                        <h2>Notifications Blocked</h2>
-                                        <div class="move-cursor">
-                                        <ul id="notifications-not-allowed-list" class="list-group">
-                                            {% for member in profile.member_set.all %}
-                                            {% if member.user.email != profile.user.email and not member.priority%}
-                                            <li class="list-group-item">{{ member.user.email }}
-                                                <input type="hidden" name="email" value="{{ member.user.email }}"/>
-                                                <input type="hidden" name="priority" value="{{ member.priority }}"/>
-                                                <div>{{ member.notify }}</div>
-                                            </li>
-                                            {% endif %}
-                                            {% endfor %}
-                                        </ul>
-                                        </div>
+                                    <div class="flex-wrapper">
+                                        <span class="icon icon-cancel"></span>
+                                        <h4>Notifications Blocked</h4>
+                                    </div>
+                                    <div class="move-cursor">
+                                    <ul id="notifications-not-allowed-list" class="list-group">
+                                        {% for member in profile.member_set.all %}
+                                        {% if member.user.email != profile.user.email and not member.priority%}
+                                        <li class="list-group-item">{{ member.user.email }}
+                                            <input type="hidden" name="email" value="{{ member.user.email }}"/>
+                                            <input type="hidden" name="priority" value="{{ member.priority }}"/>
+                                            <div>{{ member.notify }}</div>
+                                        </li>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <!-- Slider -->
+                    <div>
+                        <input type="hidden" name="priority-delay" id="update-priority-delay-delay" />
+                        <div class="update-priority-delay-info text-center">
+                            <span
+                                class="update-priority-delay-label"
+                                data-toggle="tooltip"
+                                title="Expected delay time between notifications.">
+                                Notification Delay
+                            </span>
+                            <span
+                                id="priority-delay-slider-value"
+                                class="update-timeout-value">
+                                1 day
+                            </span>
+                        </div>
+                        <div id="priority-delay-slider"></div>
+                    </div>
+
                     <button name="save_notification_priorities" type="submit" class="btn btn-default pull-right">Save Notifications Settings
                     </button>
                     {% else %}
@@ -328,6 +353,7 @@
 {% endblock %} {% block scripts %} {% compress js %}
 <script src="{% static 'js/jquery-2.1.4.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.5.1/Sortable.min.js"></script>
+<script src="{% static 'js/nouislider.min.js' %}"></script>
+<script src="{% static 'js/Sortable.min.js' %}"></script>
 <script src="{% static 'js/profile.js' %}"></script>
 {% endcompress %} {% endblock %}
