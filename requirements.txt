@@ -11,7 +11,7 @@ djmail==0.11.0
 funcsigs==1.0.2
 futures==3.0.3
 gunicorn==19.6.0
-lxml==3.7.3
+lxml==3.7.2
 mock==2.0.0
 nose==1.3.7
 packaging==16.8
@@ -26,4 +26,3 @@ rjsmin==1.0.12
 sendgrid==3.6.3
 sendgrid-django==4.0.4
 six==1.10.0
-whitenoise==3.3.0

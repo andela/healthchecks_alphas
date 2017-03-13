@@ -16,9 +16,9 @@ It is live here: [http://healthchecks.io/](http://healthchecks.io/)
 
 The building blocks are:
 
-* Python 2 or Python 3
-* Django 1.9
-* PostgreSQL or MySQL
+* Python 2
+* Django 1.9 or higher
+* PostgreSQL
 
 ## Setting Up for Development
 
@@ -38,7 +38,7 @@ in development environment.
 
 * check out project code:
 
-        $ git clone https://github.com/healthchecks/healthchecks.git
+        $ git clone git@github.com:andela/healthchecks_alphas.git
 
 * install requirements (Django, ...) into virtualenv:
 
@@ -75,18 +75,6 @@ following in it, changing it as neccessary:
     DATABASES = {
         'default': {
             'ENGINE':   'django.db.backends.postgresql',
-            'NAME':     'your-database-name-here',
-            'USER':     'your-database-user-here',
-            'PASSWORD': 'your-database-password-here',
-            'TEST': {'CHARSET': 'UTF8'}
-        }
-    }
-
-For MySQL:
-
-    DATABASES = {
-        'default': {
-            'ENGINE':   'django.db.backends.mysql',
             'NAME':     'your-database-name-here',
             'USER':     'your-database-user-here',
             'PASSWORD': 'your-database-password-here',
@@ -180,9 +168,9 @@ There are separate Django management commands for each task:
     $ ./manage.py pruneusers
     ```    
 
-When you first try these commands on your data, it is a good idea to 
-test them on a copy of your database, not on the live database right away. 
-In a production setup, you should also have regular, automated database 
+When you first try these commands on your data, it is a good idea to
+test them on a copy of your database, not on the live database right away.
+In a production setup, you should also have regular, automated database
 backups set up.
 
 ## Integrations

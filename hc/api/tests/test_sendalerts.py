@@ -20,6 +20,8 @@ class SendAlertsTestCase(BaseTestCase):
             check.status = "up"
             check.save()
 
+
+        ### Assert when Command's handle many that when handle_many should return True
         result = Command().handle_many()
         assert result, "handle_many should return True"
 
@@ -38,5 +40,3 @@ class SendAlertsTestCase(BaseTestCase):
 
         # Expect no exceptions--
         Command().handle_one(check)
-
-    ### Assert when Command's handle many that when handle_many should return True
