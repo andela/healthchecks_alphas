@@ -58,7 +58,6 @@ class Check(models.Model):
     def name_then_code(self):
         if self.name:
             return self.name
-
         return str(self.code)
 
     def url(self):
@@ -69,18 +68,6 @@ class Check(models.Model):
 
     def email(self):
         return "%s@%s" % (self.code, settings.PING_EMAIL_DOMAIN)
-
-    def send_alert(self):
-        if self.status not in ("up", "down"):
-            raise NotImplementedError("Unexpected status: %s" % self.status)
-
-        errors = []
-        for channel in self.channel_set.all():
-            error = channel.notify(self)
-            if error not in ("", "no-op"):
-                errors.append((channel, error))
-
-        return errors
 
     def get_status(self):
         if self.status in ("new", "paused"):

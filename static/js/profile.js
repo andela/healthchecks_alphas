@@ -3,17 +3,13 @@ $(function() {
     var allowed = document.getElementById("notifications-allowed-list");
     var srt_allowed = Sortable.create(allowed, {
         group: "omega",
-
-        onUpdate: function(evt){
-            var childs = $(evt.item).parent(allowed).children();
+        onSort: function (evt) {
+            console.log("on sort!");
+            var childs = $("#notifications-allowed-list").children();
+//            console.log("Childs: " + JSON.stringify(childs));
             childs.each(function(index) {
-                $(this).children("input[name*='priority']").val(index+1);
-            });
-        },
-
-        onAdd: function(evt){
-            var childs = $(evt.item).parent(allowed).children();
-            childs.each(function(index) {
+                console.log("Child each: " + JSON.stringify(this));
+//                console.log("Child each: " + this);
                 $(this).children("input[name*='priority']").val(index+1);
             });
         }
