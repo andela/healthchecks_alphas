@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='check',
-            name='nag_interval',
+            name='nag',
             field=models.DurationField(default=datetime.timedelta(0, 3600)),
         ),
     ]

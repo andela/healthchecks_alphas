@@ -115,8 +115,8 @@
         <form id="update-timeout-form" method="post">
             {% csrf_token %}
             <input type="hidden" name="timeout" id="update-timeout-timeout" />
-              <input type="hidden" name="grace" id="update-timeout-grace" />
-            <input type="hidden" name="nag_interval" id="update-timeout-nag_interval" />
+            <input type="hidden" name="grace" id="update-timeout-grace" />
+            <input type="hidden" name="nag" id="update-timeout-nag" />
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="update-timeout-info text-center">
@@ -154,8 +154,8 @@
                         <span
                             class="update-timeout-label"
                             data-toggle="tooltip"
-                            title="Intervals between which emails are sent when job is down.">
-                            Nag Interval
+                            title="When job goes down, how much time between notifications">
+                            Nag interval
                         </span>
                         <span
                             id="nag-slider-value"
@@ -176,8 +176,8 @@
                             When a check is late, how much time to wait until alert is sent.
                         </p>
                         <p>
-                            <span>Nag Interval</span>
-                            Intervals between which emails are sent when job is down.
+                            <span>Nag interval</span>
+                            When job goes down, how much time between notifications.
                         </p>
                     </div>
 
