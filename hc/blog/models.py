@@ -13,6 +13,9 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name_plural = "posts"
+        
     def __str__(self):
         '''
             Return a human readable representation of model instance
