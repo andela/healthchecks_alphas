@@ -7,6 +7,8 @@
         <th class="th-period">
             Period <br />
             <span class="checks-subline">Grace</span>
+            <br />
+            <span class="checks-subline">Nag</span>
         </th>
         <th>Last Ping</th>
         <th></th>
@@ -54,7 +56,9 @@
                 data-url="{% url 'hc-update-timeout' check.code %}"
                 data-timeout="{{ check.timeout.total_seconds }}"
                 data-grace="{{ check.grace.total_seconds }}"
-                data-nag_interval="{{ check.nag_interval.total_seconds }}"
+                {% if check.nag != None%}
+                data-nag="{{ check.nag.total_seconds }}"
+                {% endif %}
                 class="timeout-grace">
                 {{ check.timeout|hc_duration }}
                 <br />
@@ -63,7 +67,9 @@
                 </span>
                 <br />
                 <span class="checks-subline">
-                {{ check.nag_interval|hc_duration }}
+                {% if check.nag %}
+                {{ check.nag|hc_duration }}
+                {% endif %}
                 </span>
             </span>
         </td>
