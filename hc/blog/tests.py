@@ -9,3 +9,8 @@ class PostTestCase(TestCase):
 
     def test_verbose_name_plural(self):
         self.assertEqual(str(Post._meta.verbose_name_plural), "posts")
+
+class BlogTestCases(TestCase):
+    def test_blog_page(self):
+        response = self.client.get('/blog')
+        self.assertEqual(response.status_code, 200)
