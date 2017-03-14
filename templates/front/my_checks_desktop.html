@@ -25,9 +25,11 @@
             {% elif check.in_grace_period %}
                 <span class="status icon-grace"></span>
             {% elif check.get_status == "up" %}
-                <span class="status icon-up"></span>
+                <span class="status icon-up"
+                    data-toggle="tooltip" title="Check status- UP"></span>
             {% elif check.get_status == "down" %}
-                <span class="status icon-down"></span>
+                <span class="status icon-down"
+                    data-toggle="tooltip" title="Check status- DOWN"></span>
             {% endif %}
         </td>
         <td class="name-cell">
