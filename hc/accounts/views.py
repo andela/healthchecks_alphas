@@ -193,6 +193,7 @@ def profile(request):
                     user = _make_user(email)
 
                 profile.invite(user)
+
                 messages.success(request, "Invitation to %s sent!" % email)
         elif "remove_team_member" in request.POST:
             form = RemoveTeamMemberForm(request.POST)
@@ -220,18 +221,8 @@ def profile(request):
         elif "save_notification_priorities" in request.POST:
             if not profile.team_access_allowed:
                 return HttpResponseForbidden()
-            # request.POST
-            pp = pprint.PrettyPrinter(indent=4)
-
-            print("\n\n **** Request JSON ****\n\n\n")
-            pp.pprint(request.POST)
-            print("Priority: ")
             data = dict(request.POST.iterlists())
-            print([int(i) for i in data.get('priority')])
-            print("email: ")
-            print([str(i) for i in data.get('email')])
-            # print(request.__dict__)
-            print("\n\n **** Request JSON ****\n\n\n")
+
             emails = [str(i) for i in data.get('email')]
             priorities = [int(i) for i in data.get('priority')]
             priority_dict = dict(zip(emails, priorities))
@@ -256,24 +247,6 @@ def profile(request):
                 raise e
             except Exception as e:
                 raise e
-
-            # check = Check(user=request.user)
-            # check.name = str(request.json.get("name", ""))
-            # check.tags = str(request.json.get("tags", ""))
-            # if "timeout" in request.json:
-            #     check.timeout = td(seconds=request.json["timeout"])
-            # if "grace" in request.json:
-            #     check.grace = td(seconds=request.json["grace"])
-            #
-            # check.save()
-            #
-            # # This needs to be done after saving the check, because of
-            # # the M2M relation between checks and channels:
-            # if request.json.get("channels") == "*":
-            #     check.assign_all_channels()
-            #
-            # return JsonResponse(check.to_dict(), status=201)
-
 
     tags = set()
     for check in Check.objects.filter(user=request.team.user):

@@ -13,6 +13,9 @@ from django.utils import timezone
 from hc.api import transports
 from hc.lib import emails
 
+# from hc.accounts.models import Profile
+
+
 STATUSES = (
     ("up", "Up"),
     ("down", "Down"),
@@ -69,6 +72,28 @@ class Check(models.Model):
     def email(self):
         return "%s@%s" % (self.code, settings.PING_EMAIL_DOMAIN)
 
+    def send_alert(self):
+        if self.status not in ("up", "down"):
+            raise NotImplementedError("Unexpected status: %s" % self.status)
+
+        errors = []
+
+        for channel in self.channel_set.all():
+            # owner_profile = Profile.objects.get(user=self.user)
+            # if owner_profile.prioritize_notifications:
+            #     print("Prioritize notifications")
+            #     print("\n** Channel dict prioritize: ", channel.__dict__)
+            #     error = channel.notify(self)
+            #     if error not in ("", "no-op"):
+            #         errors.append((channel, error))
+            # else:
+            print("\n** Channel dict: ", channel.__dict__)
+            error = channel.notify(self)
+            if error not in ("", "no-op"):
+                errors.append((channel, error))
+
+        return errors
+
     def get_status(self):
         if self.status in ("new", "paused"):
             return self.status
@@ -92,6 +117,9 @@ class Check(models.Model):
         if self.user:
             channels = Channel.objects.filter(user=self.user)
             self.channel_set.add(*channels)
+            # profile = Profile.objects.get(user=self.user)
+            # member_channels = Channel.objects.filter(team=profile)
+            # self.channel_set.add(*member_channels)
 
     def tags_list(self):
         return [t.strip() for t in self.tags.split(" ") if t.strip()]
@@ -192,6 +220,11 @@ class Channel(models.Model):
 
     def test(self):
         return self.transport().test()
+
+    def check_names(self):
+        return ', '.join([a.name for a in self.checks.all()])
+
+    check_names.short_description = "Check Names"
 
     @property
     def po_value(self):

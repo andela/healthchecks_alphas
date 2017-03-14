@@ -147,7 +147,7 @@ class ChannelsAdmin(admin.ModelAdmin):
     search_fields = ["value", "user__email"]
     list_select_related = ("user", )
     list_display = ("id", "code", "email", "formatted_kind", "value",
-                    "num_notifications")
+                    "num_notifications", "check_names")
     list_filter = ("kind", )
 
     def email(self, obj):
