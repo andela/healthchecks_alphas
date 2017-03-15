@@ -27,3 +27,7 @@ class BlogTestCases(TestCase):
         response = self.client.get("/blog/")
         self.assertContains(response, 'TIA')
         self.assertContains(response, 'TIA content')
+
+    def test_no_entries(self):
+        response = self.client.get('/blog/')
+        self.assertContains(response, 'No blog posts yet')
