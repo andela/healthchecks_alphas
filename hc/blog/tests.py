@@ -24,6 +24,10 @@ class BlogTestCases(TestCase):
         response = self.client.get(post.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
+    def test_get_absolute_url(self):
+        post = Post.objects.create(title="My post title", author=self.user)
+        self.assertIsNotNone(post.get_absolute_url())
+
     def test_blog_page(self):
         response = self.client.get('/blog/')
         self.assertEqual(response.status_code, 200)
