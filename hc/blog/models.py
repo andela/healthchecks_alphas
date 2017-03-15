@@ -30,6 +30,7 @@ class Comment(models.Model):
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
+    post = models.ForeignKey(Post, related_name='comments', null=True)
 
     def __str__(self):
         return self.body
