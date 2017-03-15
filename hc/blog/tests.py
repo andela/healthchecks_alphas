@@ -12,5 +12,5 @@ class PostTestCase(TestCase):
 
 class BlogTestCases(TestCase):
     def test_blog_page(self):
-        response = self.client.get('/blog')
+        response = self.client.get('/blog/')
         self.assertEqual(response.status_code, 200)
