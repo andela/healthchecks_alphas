@@ -18,6 +18,12 @@ class BlogTestCases(TestCase):
     '''
         Test that blog entries show up on post list page
     '''
+
+    def test_basic_post_view(self):
+        post = Post.objects.create(title="TIA", content="TIA content", author=self.user)
+        response = self.client.get(post.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
     def test_blog_page(self):
         response = self.client.get('/blog/')
         self.assertEqual(response.status_code, 200)
