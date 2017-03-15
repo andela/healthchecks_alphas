@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.core.urlresolvers import reverse
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -15,9 +16,12 @@ class Post(models.Model):
 
     class Meta:
         verbose_name_plural = "posts"
-        
+
     def __str__(self):
         '''
             Return a human readable representation of model instance
         '''
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('post_detail', kwargs={'pk': self.pk})
