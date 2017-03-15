@@ -2,7 +2,7 @@
 
 {% block content %}
   {% for post in posts %}
-    {% include "_post_list.html" with post=post only%}
+    {% include "blog/_post_list.html" with post=post only%}
   {% empty %}
     <p>No blog posts yet</p>
   {% endfor %}
