@@ -33,6 +33,11 @@ class BlogTestCases(TestCase):
         response = self.client.get(post.get_absolute_url())
         self.assertContains(response, post.title)
 
+    def test_content_in_post(self):
+        post = Post.objects.create(title="TIA", content="TIA content", author=self.user)
+        response = self.client.get(post.get_absolute_url())
+        self.assertContains(response, post.content)
+
     def test_blog_page(self):
         response = self.client.get('/blog/')
         self.assertEqual(response.status_code, 200)
