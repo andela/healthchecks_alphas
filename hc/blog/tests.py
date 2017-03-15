@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from .models import Post
+from .models import Post, Comment
 
 class PostTestCase(TestCase):
     def test_string_representation(self):
@@ -51,3 +51,8 @@ class BlogTestCases(TestCase):
     def test_no_entries(self):
         response = self.client.get('/blog/')
         self.assertContains(response, 'No blog posts yet')
+
+class CommentTestCase(TestCase):
+    def test_string_representation(self):
+        comment = Comment(body="This is a comment!")
+        self.assertEqual(str(comment), "This is a comment!")
