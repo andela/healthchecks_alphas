@@ -57,3 +57,6 @@ class UpdateTimeoutTestCase(BaseTestCase):
         self.client.login(username="charlie@example.org", password="password")
         r = self.client.post(url, data=payload)
         assert r.status_code == 403
+
+    def test_check_priority(self):
+        self.assertEqual(self.check.check_priority, 1)

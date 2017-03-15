@@ -168,6 +168,31 @@
 
                     <div class="update-timeout-terms">
                         <p>
+                            <span>Set priority</span>
+                        </p>
+                    </div>
+
+                    <div class="radio radio-danger radio-inline" style="margin-top: 0px;">
+                        <input type="radio" id="inlineRadio1" value="HIGH" name="priority" 
+                        {% if check.check_priority == 0 %} checked {% endif %} >
+                        <label for="inlineRadio1">High</label>
+                    </div>
+                    <div class="radio radio-info radio-inline">
+                        <input type="radio" id="inlineRadio2" value="MEDIUM" name="priority" 
+                        {% if check.check_priority == 1 %} checked {% endif %} >
+                        <label for="inlineRadio2">Medium</label>
+                    </div>
+
+                    <div class="radio radio-inline">
+                        <input type="radio" id="inlineRadio3" value="LOW" name="priority" 
+                        {% if check.check_priority == 2 %} checked {% endif %} >
+                        <label for="inlineRadio3">Low</label>
+                    </div>
+
+                    <br>
+
+                    <div class="update-timeout-terms">
+                        <p>
                             <span>Period</span>
                             Expected time between pings.
                         </p>

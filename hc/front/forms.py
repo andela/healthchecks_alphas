@@ -1,6 +1,11 @@
 from django import forms
 from hc.api.models import Channel
 
+PPRIORITY_CHOICES = (
+        (0, 'HIGH'),
+        (1, 'MEDIUM'),
+        (2, 'LOW'),
+    )
 
 class NameTagsForm(forms.Form):
     name = forms.CharField(max_length=100, required=False)
@@ -18,9 +23,11 @@ class NameTagsForm(forms.Form):
 
 
 class TimeoutForm(forms.Form):
+
     timeout = forms.IntegerField(min_value=60, max_value=2592000)
     grace = forms.IntegerField(min_value=60, max_value=2592000)
     nag = forms.IntegerField(min_value=60, max_value=2592000)
+    priority = forms.IntegerField(min_value=0, max_value=2)
 
 class AddChannelForm(forms.ModelForm):
 
