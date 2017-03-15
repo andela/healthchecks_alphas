@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load compress humanize staticfiles %}
+
+{% block title %} FAQs {% endblock %}
+
+{% block containers %}
+<div class="container">
+
+<div class="row">
+<h1 id="pitch-subtitle">How to add a check</h1>
+<p id="pitch-text">
+    <br/>
+    To add a check, you first need to enter your preferred e-mail address on the welcome
+    page. This will enable you to receive alerts whenever your check goes down.
+    After the e-mail has been added, you will receive an e-mail with a login link. On clicking
+    the link you will be redirected to the checks page and from there all
+    you need to is to click on the add check button.
+</p>
+</div>
+
+<div class="row">
+<h1 id="pitch-subtitle">How to ping a check</h1>
+<p id="pitch-text">
+<br/>
+    To ping a check, go to the checks page and copy the ping url whenever your check goes down.
+    There a number of ways to ping.
+    The link can be pasted in a browser search bar and following it will return the message OK.
+    After pinging a check it will either go from never pinged to up or down to up depending on
+    whether it had been pinged before.
+</p>
+</div>
+
+</div>
+
+{% endblock %}
