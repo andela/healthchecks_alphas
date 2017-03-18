@@ -14,7 +14,7 @@ from django.dispatch import receiver
 from django.db.models import Max
 
 from hc.lib import emails
-from hc.api.models import Channel
+from hc.api.models import Channel, Check
 
 REPORT_DURATIONS = (
     (1, "Daily"),
@@ -39,8 +39,8 @@ class Profile(models.Model):
                                        default=30)
     prioritize_notifications = models.BooleanField(default=False)
     priority_delay = models.DurationField(default=DEFAULT_PRIORITY_DELAY)
-    # next_priority_notification = models.DateTimeField(null=True, blank=True)
-    # previous
+    next_priority_notification = models.DateTimeField(null=True, blank=True)
+    current_priority = models.IntegerField(default=1, null=False, blank=False)
 
     
     def __str__(self):
@@ -110,6 +110,7 @@ class Member(models.Model):
     team = models.ForeignKey(Profile)
     user = models.ForeignKey(User)
     priority = models.IntegerField(default=1) # Don't notify if priority is 0 (zero)
+    allowed_checks = models.ManyToManyField(Check)
 
     def add_email_integration_to_team_owner_channel(self, user):
         if not Channel.objects.filter(user=self.team.user, value=user.email):
@@ -121,6 +122,10 @@ class Member(models.Model):
         else:
             print("\n*** Channels already assign: ", Channel.objects.get(user=self.user, value=user.email).__dict__ )
 
+    def allowed_check_names(self):
+        return ', '.join([a.name for a in self.allowed_checks.all()])
+
+    allowed_check_names.short_description = "Allowed Check Names"
 
 @receiver(models.signals.post_save, sender=Member)
 def execute_after_save(sender, instance, created, *args, **kwargs):

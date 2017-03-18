@@ -21,10 +21,7 @@ from hc.accounts.forms import (EmailPasswordForm, InviteTeamMemberForm,
                                SetPasswordForm, TeamNameForm)
 from hc.accounts.models import Profile, Member, REPORT_DURATIONS
 from hc.api.models import Channel, Check
-from hc.api import schemas
-from hc.api.decorators import check_api_key, validate_json
 from hc.lib.badges import get_badge_url
-
 
 
 def _make_user(email):
@@ -140,7 +137,7 @@ def check_token(request, username, token):
 @login_required
 def profile(request):
     profile = request.user.profile
-    # Switch user back to its default team 
+    # Switch user back to its default team
     if profile.current_team_id != profile.id:
         request.team = profile
         profile.current_team_id = profile.id
@@ -176,7 +173,7 @@ def profile(request):
                     profile.report_duration = REPORT_DURATIONS[2][0]
                 else:
                     return HttpResponseBadRequest()
-                
+
                 profile.save()
                 messages.success(request, "Your settings have been updated!")
         elif "invite_team_member" in request.POST:
@@ -222,6 +219,7 @@ def profile(request):
             if not profile.team_access_allowed:
                 return HttpResponseForbidden()
             data = dict(request.POST.iterlists())
+            print(data)
 
             emails = [str(i) for i in data.get('email')]
             priorities = [int(i) for i in data.get('priority')]

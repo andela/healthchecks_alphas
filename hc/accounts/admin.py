@@ -39,8 +39,8 @@ class MemberAdmin(admin.ModelAdmin):
             'all': ('css/admin/profiles.css',)
         }
 
-    list_display = ("team", "user", "priority")
-    search_fields = ["team", "user", "priority"]
+    list_display = ("team", "user", "priority", "allowed_check_names")
+    search_fields = ["team", "user", "priority", "allowed_check_names"]
     list_filter = ("team", "user", "priority")
 
 class HcUserAdmin(UserAdmin):
