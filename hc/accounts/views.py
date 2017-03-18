@@ -30,8 +30,8 @@ def _make_user(email):
     user.set_unusable_password()
     user.save()
 
-    profile = Profile(user=user)
-    profile.save()
+    user_profile = Profile(user=user)
+    user_profile.save()
 
     channel = Channel()
     channel.user = user
@@ -136,48 +136,48 @@ def check_token(request, username, token):
 
 @login_required
 def profile(request):
-    profile = request.user.profile
+    user_profile = request.user.profile
     # Switch user back to its default team
-    if profile.current_team_id != profile.id:
-        request.team = profile
-        profile.current_team_id = profile.id
-        profile.save()
+    if user_profile.current_team_id != user_profile.id:
+        request.team = user_profile
+        user_profile.current_team_id = user_profile.id
+        user_profile.save()
 
     show_api_key = False
     if request.method == "POST":
         if "set_password" in request.POST:
-            profile.send_set_password_link()
+            user_profile.send_set_password_link()
             return redirect("hc-set-password-link-sent")
         elif "create_api_key" in request.POST:
-            profile.set_api_key()
+            user_profile.set_api_key()
             show_api_key = True
             messages.success(request, "The API key has been created!")
         elif "revoke_api_key" in request.POST:
-            profile.api_key = ""
-            profile.save()
+            user_profile.api_key = ""
+            user_profile.save()
             messages.info(request, "The API key has been revoked!")
         elif "show_api_key" in request.POST:
             show_api_key = True
         elif "update_reports_allowed" in request.POST:
             form = ReportSettingsForm(request.POST)
             if form.is_valid():
-                print form.cleaned_data
-                profile.reports_allowed = True
+                print(form.cleaned_data)
+                user_profile.reports_allowed = True
                 if form.cleaned_data['report_duration'] == 'never':
-                    profile.reports_allowed = False
+                    user_profile.reports_allowed = False
                 elif form.cleaned_data['report_duration'] == 'daily':
-                    profile.report_duration = REPORT_DURATIONS[0][0]
+                    user_profile.report_duration = REPORT_DURATIONS[0][0]
                 elif form.cleaned_data['report_duration'] == 'weekly':
-                    profile.report_duration = REPORT_DURATIONS[1][0]
+                    user_profile.report_duration = REPORT_DURATIONS[1][0]
                 elif form.cleaned_data['report_duration'] == 'monthly':
-                    profile.report_duration = REPORT_DURATIONS[2][0]
+                    user_profile.report_duration = REPORT_DURATIONS[2][0]
                 else:
                     return HttpResponseBadRequest()
 
-                profile.save()
+                user_profile.save()
                 messages.success(request, "Your settings have been updated!")
         elif "invite_team_member" in request.POST:
-            if not profile.team_access_allowed:
+            if not user_profile.team_access_allowed:
                 return HttpResponseForbidden()
 
             form = InviteTeamMemberForm(request.POST)
@@ -189,7 +189,7 @@ def profile(request):
                 except User.DoesNotExist:
                     user = _make_user(email)
 
-                profile.invite(user)
+                user_profile.invite(user)
 
                 messages.success(request, "Invitation to %s sent!" % email)
         elif "remove_team_member" in request.POST:
@@ -201,22 +201,22 @@ def profile(request):
                 farewell_user.profile.current_team = None
                 farewell_user.profile.save()
 
-                Member.objects.filter(team=profile,
+                Member.objects.filter(team=user_profile,
                                       user=farewell_user).delete()
 
                 messages.info(request, "%s removed from team!" % email)
         elif "set_team_name" in request.POST:
-            if not profile.team_access_allowed:
+            if not user_profile.team_access_allowed:
                 return HttpResponseForbidden()
 
             form = TeamNameForm(request.POST)
             if form.is_valid():
-                profile.team_name = form.cleaned_data["team_name"]
-                profile.save()
+                user_profile.team_name = form.cleaned_data["team_name"]
+                user_profile.save()
                 messages.success(request, "Team Name updated!")
 
         elif "save_notification_priorities" in request.POST:
-            if not profile.team_access_allowed:
+            if not user_profile.team_access_allowed:
                 return HttpResponseForbidden()
             data = dict(request.POST.iterlists())
             print(data)
@@ -226,17 +226,17 @@ def profile(request):
             priority_dict = dict(zip(emails, priorities))
 
             try:
-                profile.priority_delay = td(seconds =(int(data.get('priority_delay')[0])))
+                user_profile.priority_delay = td(seconds =(int(data.get('priority_delay')[0])))
                 checked = data.get('priority_notifications_allowed')
                 if checked:
-                    profile.prioritize_notifications = True
+                    user_profile.prioritize_notifications = True
                 else:
-                    profile.prioritize_notifications = False
+                    user_profile.prioritize_notifications = False
 
-                profile.save()
+                user_profile.save()
                 for email, priority in priority_dict.iteritems():
                     user = User.objects.get(email=email)
-                    members = Member.objects.filter(team=profile,
+                    members = Member.objects.filter(team=user_profile,
                                       user=user)
                     for member in members:
                         member.priority = priority
@@ -261,7 +261,7 @@ def profile(request):
     ctx = {
         "page": "profile",
         "badge_urls": badge_urls,
-        "profile": profile,
+        "profile": user_profile,
         "show_api_key": show_api_key
     }
 

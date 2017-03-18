@@ -10,10 +10,12 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+
+# from hc.accounts.models import Profile, Member
 from hc.api import transports
 from hc.lib import emails
 
-# from hc.accounts.models import Profile
+# from hc.accounts.models import Member
 
 
 STATUSES = (
@@ -79,15 +81,27 @@ class Check(models.Model):
         errors = []
 
         for channel in self.channel_set.all():
-            # owner_profile = Profile.objects.get(user=self.user)
-            # if owner_profile.prioritize_notifications:
-            #     print("Prioritize notifications")
-            #     print("\n** Channel dict prioritize: ", channel.__dict__)
-            #     error = channel.notify(self)
-            #     if error not in ("", "no-op"):
-            #         errors.append((channel, error))
-            # else:
             print("\n** Channel dict: ", channel.__dict__)
+            error = channel.notify(self)
+            if error not in ("", "no-op"):
+                errors.append((channel, error))
+
+        return errors
+
+    def send_priority_alert(self, member):
+        print("\n\n %% Prioritize notifications %%\n\n")
+        # Only alert the next member in the priority list
+        if self.status not in ("up", "down"):
+            raise NotImplementedError("Unexpected status: %s" % self.status)
+
+        errors = []
+        q = self.channel_set.all()
+        print ("Channels set: ", q)
+        print ("Member: ", member)
+        member_channels = q.filter(value=member.user.email)
+        print ("Member channels: ", member_channels)
+        for channel in member_channels:
+            print("\n** Channel priority  dict: ", channel.__dict__)
             error = channel.notify(self)
             if error not in ("", "no-op"):
                 errors.append((channel, error))
