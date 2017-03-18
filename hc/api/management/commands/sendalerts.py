@@ -56,19 +56,21 @@ class Command(BaseCommand):
 
         if not prioritize:
             check.status = check.get_status()
-        # Save the new status. If sendalerts crashes,
-        # it won't process this check again.
-        check.save()
-        tmpl = "\nSending alert, status=%s, code=%s\n"
-        self.stdout.write(tmpl % (check.status, check.code))
-        if check_owner.prioritize_notifications:
+            # Save the new status. If sendalerts crashes,
+            # it won't process this check again.
+            check.save()
+            tmpl = "\nSending alert, status=%s, code=%s\n"
+            self.stdout.write(tmpl % (check.status, check.code))
+            errors = check.send_alert()
+        else:
+            tmpl = "\nSending priority alert, status=%s, code=%s\n"
+            self.stdout.write(tmpl % (check.status, check.code))
             errors = check.send_priority_alert(
                     check_owner.get_next_priority_member())
             check_owner.current_priority = \
                 check_owner.get_next_priority_number()
             check_owner.save()
-        else:
-            errors = check.send_alert()
+
         for ch, error in errors:
             self.stdout.write("ERROR: %s %s %s\n" % (ch.kind, ch.value, error))
 
