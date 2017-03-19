@@ -210,8 +210,19 @@ def profile(request):
                 for channel in farewell_user_channel:
                     channel.delete()
 
-                Member.objects.filter(team=user_profile,
-                                      user=farewell_user).delete()
+                farewell_member = Member.objects.get(team=user_profile,
+                                      user=farewell_user)
+                # First, set team members with priorities greater than deleted
+                # member to minus one
+                lower_priority_members = Member.objects.filter(
+                        team=user_profile,
+                        priority__gt=farewell_member.priority)
+                for member in lower_priority_members:
+                    member.priority -= 1
+                    member.save()
+
+                farewell_member.delete()
+
 
                 messages.info(request, "%s removed from team!" % email)
         elif "set_team_name" in request.POST:

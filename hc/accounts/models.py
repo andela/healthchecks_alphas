@@ -163,7 +163,8 @@ class Member(models.Model):
 def execute_after_save(sender, instance, created, *args, **kwargs):
     if created:
         # If member already exists. delete this membership
-        if Member.objects.filter(user=instance.user, team=instance.team):
+        if len(Member.objects.filter(
+                user=instance.user, team=instance.team)) > 1:
             instance.delete()
         else:
             maximum_priority = instance.team.get_maximum_priority()
