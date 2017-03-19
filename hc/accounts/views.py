@@ -228,7 +228,6 @@ def profile(request):
             if not user_profile.team_access_allowed:
                 return HttpResponseForbidden()
             data = dict(request.POST.iterlists())
-            print ("POST: ", request.POST)
 
             emails = [str(i) for i in data.get('email')]
             priorities = [int(i) for i in data.get('priority')]
