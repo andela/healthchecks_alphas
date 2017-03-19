@@ -11,11 +11,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-# from hc.accounts.models import Profile, Member
 from hc.api import transports
 from hc.lib import emails
-
-# from hc.accounts.models import Member
 
 
 STATUSES = (
@@ -186,10 +183,6 @@ class Channel(models.Model):
     def assign_all_checks(self):
         checks = Check.objects.filter(user=self.user)
         self.checks.add(*checks)
-        # check_ids = ['1233', '3524', '64353']
-        # for check_id in check_ids:
-        #     check = Check.objects.get(id=check_id)
-        #     cynthia =
 
     def make_token(self):
         seed = "%s%s" % (self.code, settings.SECRET_KEY)
