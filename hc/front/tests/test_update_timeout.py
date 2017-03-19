@@ -7,11 +7,13 @@ class UpdateTimeoutTestCase(BaseTestCase):
     def setUp(self):
         super(UpdateTimeoutTestCase, self).setUp()
         self.check = Check(user=self.alice)
+        self.check.name = "Yo!"
         self.check.save()
 
     def test_it_works(self):
         url = "/checks/%s/timeout/" % self.check.code
-        payload = {"timeout": 3600, "grace": 60}
+
+        payload = {"timeout": 3600, "grace": 60, "nag": 3600}
 
         self.client.login(username="alice@example.org", password="password")
         r = self.client.post(url, data=payload)
@@ -23,7 +25,7 @@ class UpdateTimeoutTestCase(BaseTestCase):
 
     def test_team_access_works(self):
         url = "/checks/%s/timeout/" % self.check.code
-        payload = {"timeout": 7200, "grace": 60}
+        payload = {"timeout": 7200, "grace": 60, "nag": 3600}
 
         # Logging in as bob, not alice. Bob has team access so this
         # should work.

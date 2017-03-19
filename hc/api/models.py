@@ -58,7 +58,7 @@ class Check(models.Model):
     last_ping = models.DateTimeField(null=True, blank=True)
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
-    nag_interval = models.DurationField(default=DEFAULT_NAG)
+    nag = models.DurationField(default=DEFAULT_NAG)
     next_priority_notification = models.DateTimeField(null=True, blank=True)
 
     def name_then_code(self):
@@ -116,8 +116,6 @@ class Check(models.Model):
 
         now = timezone.now()
 
-        if self.name == "Alice test":
-            print("\nTest check: ", self.__dict__)
         if self.last_ping + self.timeout + self.grace > now:
             return "up"
 

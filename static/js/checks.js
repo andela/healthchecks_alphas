@@ -112,7 +112,7 @@ $(function () {
     nagIntervalSlider.noUiSlider.on("update", function(a, b, value) {
         var rounded = Math.round(value);
         $("#nag-slider-value").text(secsToText(rounded));
-        $("#update-timeout-nag_interval").val(rounded);
+        $("#update-timeout-nag").val(rounded);
     });
 
 
@@ -136,7 +136,7 @@ $(function () {
         $("#update-timeout-form").attr("action", $this.data("url"));
         periodSlider.noUiSlider.set($this.data("timeout"))
         graceSlider.noUiSlider.set($this.data("grace"))
-        nagIntervalSlider.noUiSlider.set($this.data("nag_interval"))
+        nagIntervalSlider.noUiSlider.set($this.data("nag"))
         $('#update-timeout-modal').modal({"show":true, "backdrop":"static"});
 
         return false;
