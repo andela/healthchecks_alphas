@@ -8,7 +8,6 @@ from mock import patch
 
 
 class SendAlertsTestCase(BaseTestCase):
-
     @patch("hc.api.management.commands.sendalerts.Command.handle_one")
     def test_it_handles_few(self, mock):
         yesterday = timezone.now() - timedelta(days=1)
@@ -37,6 +36,3 @@ class SendAlertsTestCase(BaseTestCase):
 
         # Expect no exceptions--
         Command().handle_one(check)
-
-
-

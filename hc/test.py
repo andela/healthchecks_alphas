@@ -27,8 +27,8 @@ class BaseTestCase(TestCase):
         self.bobs_profile.current_team = self.profile
         self.bobs_profile.save()
 
-        m = Member(team=self.profile, user=self.bob)
-        m.save()
+        self.m_bob = Member(team=self.profile, user=self.bob)
+        self.m_bob.save()
 
         # Charlie should have no access to Alice's stuff
         self.charlie = User(username="charlie", email="charlie@example.org")
