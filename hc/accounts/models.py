@@ -162,6 +162,11 @@ class Member(models.Model):
 @receiver(models.signals.post_save, sender=Member)
 def execute_after_save(sender, instance, created, *args, **kwargs):
     if created:
-        maximum_priority = instance.team.get_maximum_priority()
-        instance.priority = maximum_priority + 1
-        instance.save()
+        # If member already exists. delete this membership
+        if Member.objects.filter(user=instance.user, team=instance.team):
+            instance.delete()
+        else:
+            maximum_priority = instance.team.get_maximum_priority()
+            instance.priority = maximum_priority + 1
+            instance.save()
+
