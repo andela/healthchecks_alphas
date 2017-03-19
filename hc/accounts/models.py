@@ -119,6 +119,7 @@ class Profile(models.Model):
         print ("Current priority:", self.current_priority)
         if max_priority:
             next_priority = (self.current_priority % max_priority) + 1
+            print ("Next priority:", next_priority)
             return next_priority
 
     def get_next_priority_member(self):

@@ -43,9 +43,6 @@ class Command(BaseCommand):
         checks_not_scheduled = query.filter(
                 next_priority_notification__isnull=True)
 
-        for check in checks:
-            print ("check : ", check.__dict__)
-
         futures = [executor.submit(self.handle_one, check, check in
                                    checks_with_priorities) for check in checks]
         for future in futures:
@@ -104,12 +101,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write("sendalerts is now running")
         ticks = 0
+        count = 0
         while True:
             if self.handle_many():
                 ticks = 1
             else:
                 ticks += 1
-            print ("Ticks: ", ticks)
+            count += 1
+            print ("%s(%s)" % ("." * count, count))
+            if count == 60:
+                count = 0
             time.sleep(1)
             if ticks % 10 == 0:
                 formatted = timezone.now().isoformat()
