@@ -27,6 +27,22 @@ class PrioritiesTestCase(BaseTestCase):
         member_anna.save()
         assert member_anna.priority == 4
 
+    def test_it_decrements_priorities_on_member_removal(self):
+        charlie_profile = Profile(user=self.charlie)
+        charlie_profile.save()
+        member_charlie = Member(user=self.charlie, team=self.profile)
+        member_charlie.save()
+
+        # There are already two users
+        assert member_charlie.priority == 3
+
+        # Delete bob
+        self.m_bob.delete()
+
+        charlie_m = Member.objects.get(user=self.charlie, team=self.profile)
+
+        assert charlie_m.priority == 2
+
     def test_get_maximum_priority_works(self):
         charlie_profile = Profile(user=self.charlie)
         charlie_profile.save()
