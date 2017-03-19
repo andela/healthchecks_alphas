@@ -34,8 +34,8 @@ def _make_user(email):
     user_profile.save()
 
     # Make user a member of their own team
-    # user_membership = Member(team=user_profile, user=user)
-    # user_membership.save()
+    user_membership = Member(team=user_profile, user=user)
+    user_membership.save()
 
     channel = Channel()
     channel.user = user
