@@ -244,8 +244,8 @@ def profile(request):
                 user_profile.save()
                 for email, priority in priority_dict.iteritems():
                     user = User.objects.get(email=email)
-                    members = Member.objects.filter(team=user_profile,
-                                      user=user)
+                    members = Member.objects.filter(
+                            team=user_profile, user=user)
                     for member in members:
                         member.priority = priority
                         member.save()
