@@ -116,6 +116,8 @@ class Check(models.Model):
 
         now = timezone.now()
 
+        if self.name == "Alice test":
+            print("\nTest check: ", self.__dict__)
         if self.last_ping + self.timeout + self.grace > now:
             return "up"
 
