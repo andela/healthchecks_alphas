@@ -4,6 +4,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from django.core.management.base import BaseCommand
 from django.db import connection
+from django.db.models import Q
 from django.utils import timezone
 
 from hc.accounts.models import Profile
@@ -37,6 +38,11 @@ class Command(BaseCommand):
         if not checks:
             return False
 
+        checks_with_priority_due = query.filter(
+                next_priority_notification__lt=now)
+        checks_not_scheduled = query.filter(
+                next_priority_notification__isnull=True)
+
         print("\n>>> Checks with priorities: ", checks_with_priorities)
         futures = [executor.submit(self.handle_one, check, check in
                                    checks_with_priorities) for check in checks]
@@ -54,6 +60,9 @@ class Command(BaseCommand):
         print ("**** Prioritize ******", prioritize)
         check_owner = Profile.objects.get(user=check.user)
 
+        now = timezone.now()
+
+        errors = []
         if not prioritize:
             check.status = check.get_status()
             # Save the new status. If sendalerts crashes,
@@ -62,14 +71,28 @@ class Command(BaseCommand):
             tmpl = "\nSending alert, status=%s, code=%s\n"
             self.stdout.write(tmpl % (check.status, check.code))
             errors = check.send_alert()
+
         else:
-            tmpl = "\nSending priority alert, status=%s, code=%s\n"
-            self.stdout.write(tmpl % (check.status, check.code))
-            errors = check.send_priority_alert(
-                    check_owner.get_next_priority_member())
-            check_owner.current_priority = \
-                check_owner.get_next_priority_number()
-            check_owner.save()
+            if check.next_priority_notification:
+                if check.next_priority_notification <= now:
+                    tmpl = "\nSending priority alert, status=%s, code=%s\n"
+                    self.stdout.write(tmpl % (check.get_status(), check.code))
+                    errors = check.send_priority_alert(
+                            check_owner.get_next_priority_member(),
+                            check_owner.priority_delay)
+                    check_owner.current_priority = \
+                        check_owner.get_next_priority_number()
+                    check_owner.save()
+            else:
+                # next_priority_notification is null
+                tmpl = "\nSending First priority alert, status=%s, code=%s\n"
+                self.stdout.write(tmpl % (check.get_status(), check.code))
+                errors = check.send_priority_alert(
+                        check_owner.get_next_priority_member(),
+                        check_owner.priority_delay)
+                check_owner.current_priority = \
+                    check_owner.get_next_priority_number()
+                check_owner.save()
 
         for ch, error in errors:
             self.stdout.write("ERROR: %s %s %s\n" % (ch.kind, ch.value, error))

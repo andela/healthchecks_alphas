@@ -3,7 +3,7 @@
 import hashlib
 import json
 import uuid
-from datetime import timedelta as td
+from datetime import timedelta as td, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -59,6 +59,7 @@ class Check(models.Model):
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
     nag_interval = models.DurationField(default=DEFAULT_NAG)
+    next_priority_notification = models.DateTimeField(null=True, blank=True)
 
     def name_then_code(self):
         if self.name:
@@ -88,13 +89,19 @@ class Check(models.Model):
 
         return errors
 
-    def send_priority_alert(self, member):
+    def send_priority_alert(self, member, priority_delay):
         print("\n\n %% Prioritize notifications %%\n\n")
         # Only alert the next member in the priority list
         if self.status not in ("up", "down"):
             raise NotImplementedError("Unexpected status: %s" % self.status)
 
+        # reset next priority notification time first
+        now = timezone.now()
+        self.next_priority_notification = now + priority_delay
+        self.save()
+
         errors = []
+
         q = self.channel_set.all()
         print ("Channels set: ", q)
         print ("Member: ", member)

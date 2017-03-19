@@ -39,7 +39,6 @@ class Profile(models.Model):
                                           default=30)
     prioritize_notifications = models.BooleanField(default=False)
     priority_delay = models.DurationField(default=DEFAULT_PRIORITY_DELAY)
-    next_priority_notification = models.DateTimeField(null=True, blank=True)
     current_priority = models.IntegerField(default=0)
 
     def __str__(self):
