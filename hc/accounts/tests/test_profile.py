@@ -122,23 +122,3 @@ class ProfileTestCase(BaseTestCase):
         self.profile = Profile(user=self.bob, api_key="")
         self.assertEqual(len(self.profile.api_key), 0)
 
-    # Test it generates priorities on new member
-    def test_it_generates_priority_on_new_member(self):
-        charlie_profile = Profile(user=self.charlie)
-        charlie_profile.save()
-        member_charlie = Member(user=self.charlie, team=self.profile)
-        member_charlie.save()
-        # There are already two users
-        assert member_charlie.priority == 3
-
-        # Another user
-        anna = User(username="anna", email="anna@example.org")
-        anna.save()
-        anna_profile = Profile(user=anna)
-        anna_profile.save()
-        # Invite anna
-        member_anna = Member(user=anna, team=self.profile)
-        member_anna.save()
-        assert member_anna.priority == 4
-
-

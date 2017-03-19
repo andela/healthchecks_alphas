@@ -172,3 +172,16 @@ def execute_after_save(sender, instance, created, *args, **kwargs):
             instance.priority = maximum_priority + 1
             instance.save()
 
+
+@receiver(models.signals.post_delete, sender=Member)
+def member_post_delete_handler(sender, instance, **kwargs):
+    # Setet team members with priorities greater than deleted
+    # member to minus one. But only if leaving member had
+    # priority of 1 or more
+    if instance.priority > 0:
+        lower_priority_members = Member.objects.filter(
+                team=instance.team,
+                priority__gt=instance.priority)
+        for member in lower_priority_members:
+            member.priority -= 1
+            member.save()
