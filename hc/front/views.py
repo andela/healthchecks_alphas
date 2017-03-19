@@ -1,3 +1,4 @@
+from __future__ import print_function
 from collections import Counter
 from datetime import timedelta as td
 from itertools import tee
@@ -13,6 +14,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.six.moves.urllib.parse import urlencode
+
+from hc.accounts.models import Profile, Member
 from hc.api.decorators import uuid_or_400
 from hc.api.models import DEFAULT_GRACE, DEFAULT_TIMEOUT, Channel, Check, Ping
 from hc.front.forms import (AddChannelForm, AddWebhookForm, NameTagsForm,
@@ -30,7 +33,22 @@ def pairwise(iterable):
 @login_required
 def my_checks(request):
     q = Check.objects.filter(user=request.team.user).order_by("created")
+    team_owner = Profile.objects.get(user=request.team.user)
+    member = Member.objects.filter(user=request.user, team=team_owner)
+
+    print("\n\n *** Member checking: ", member)
     checks = list(q)
+    for i in checks:
+        print("Check: ", i.name)
+    if member:
+        print("\n\n *** Member checking dict: ", member[0].__dict__)
+        allowed_member_checks = member[0].allowed_checks.all()
+        for i in allowed_member_checks:
+            print("\n\n *** Allowed check name: ", i.name)
+        # If not team owner
+        if request.user != request.team.user:
+            checks = [check for check in checks if check in
+                      allowed_member_checks]
 
     counter = Counter()
     down_tags, grace_tags = set(), set()

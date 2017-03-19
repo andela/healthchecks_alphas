@@ -160,7 +160,10 @@ class Member(models.Model):
     def assign_all_checks(self):
         checks = Check.objects.filter(user=self.team.user)
         self.allowed_checks.add(*checks)
-        # return ', '.join([a.name for a in self.allowed_checks.all()])
+
+    def revoke_all_checks(self):
+        checks = Check.objects.filter(user=self.team.user)
+        self.allowed_checks.remove(*checks)
 
     allowed_check_names.short_description = "Allowed Check Names"
 
