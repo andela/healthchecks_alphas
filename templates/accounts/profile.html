@@ -1,6 +1,6 @@
-{% extends "base.html" %} 
-{% load compress staticfiles %} 
-{% block title %}Account Settings - healthchecks.io{% endblock %} 
+{% extends "base.html" %}
+{% load compress staticfiles %}
+{% block title %}Account Settings - healthchecks.io{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -50,7 +50,7 @@
         </div>
     </div>
 </div>
-    
+
 <div class="row">
     <div class="col-sm-6">
         <div class="panel panel-default">
@@ -262,13 +262,14 @@
                                     <div class="move-cursor">
                                     <ul id="notifications-allowed-list" class="list-group">
                                         {% for member in profile.sorted_member_set %}
-                                        {% if member.user.email != profile.user.email and member.priority %}
-                                        <li class="list-group-item">{{ member.user.email }}
+                                        {% if member.priority %}
+                                        <li class="list-group-item">
+                                            {{ member.user.email }}
+                                            {% if member.user.email == profile.user.email %} (Owner) {% endif %}
                                             <input type="hidden" name="email" value="{{ member.user.email }}"/>
                                             <input type="hidden" name="priority" value="{{ member.priority }}"/>
-                                            <div>{{ member.notify }}</div>
                                         </li>
-                                        {% endif %} 
+                                        {% endif %}
                                         {% endfor %}
                                     </ul>
                                     </div>
@@ -286,8 +287,10 @@
                                     <div class="move-cursor">
                                     <ul id="notifications-not-allowed-list" class="list-group">
                                         {% for member in profile.member_set.all %}
-                                        {% if member.user.email != profile.user.email and not member.priority%}
-                                        <li class="list-group-item">{{ member.user.email }}
+                                        {% if not member.priority%}
+                                        <li class="list-group-item">
+	                                        {{ member.user.email }}
+	                                        {% if member.user.email == profile.user.email %} (Owner) {% endif %}
                                             <input type="hidden" name="email" value="{{ member.user.email }}"/>
                                             <input type="hidden" name="priority" value="{{ member.priority }}"/>
                                             <div>{{ member.notify }}</div>

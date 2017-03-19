@@ -107,13 +107,15 @@ class Profile(models.Model):
         """
         maximum_priority = Member.objects.filter(
                 team=self).aggregate(Max('priority'))
-        return maximum_priority['priority__max']
+        if maximum_priority:
+            return maximum_priority['priority__max']
+        else:
+            return 0
 
     def get_next_priority_number(self):
         # Loop back to 1 when the maximum priority is reached
-        print ("Next member :(")
         max_priority = self.get_maximum_priority()
-        print ("Max priority:", max_priority)
+        print ("Maximum priority:", max_priority)
         print ("Current priority:", self.current_priority)
         if max_priority:
             next_priority = (self.current_priority % max_priority) + 1
@@ -123,7 +125,8 @@ class Profile(models.Model):
         next_priority = self.get_next_priority_number()
         next_member = Member.objects.filter(team=self,
                                             priority=next_priority)
-        print ("Next member: ", next_member)
+        print ("Next member: %s (Priority %s )" %
+               (next_member[0].user.email, next_member[0].priority))
         return next_member[0]
 
     @property
@@ -142,13 +145,12 @@ class Member(models.Model):
         if not Channel.objects.filter(user=self.team.user, value=user.email):
             member_channel = Channel(user=self.team.user, kind="email",
                                      value=user.email)
-            member_channel.email_verified = True
             member_channel.save()
             # Assign checks to member so they can receive email notifications
             # for those checks
             member_channel.assign_all_checks()
         else:
-            print("\n*** Channels already assign: ", Channel.objects.get(
+            print("\n*** Channels already assigned: ", Channel.objects.get(
                     user=self.user, value=user.email).__dict__)
 
     def allowed_check_names(self):
@@ -160,7 +162,6 @@ class Member(models.Model):
 @receiver(models.signals.post_save, sender=Member)
 def execute_after_save(sender, instance, created, *args, **kwargs):
     if created:
-
         maximum_priority = instance.team.get_maximum_priority()
-        instance.priority = maximum_priority['priority__max']+1
+        instance.priority = maximum_priority + 1
         instance.save()

@@ -33,6 +33,10 @@ def _make_user(email):
     user_profile = Profile(user=user)
     user_profile.save()
 
+    # Make user a member of their own team
+    # user_membership = Member(team=user_profile, user=user)
+    # user_membership.save()
+
     channel = Channel()
     channel.user = user
     channel.kind = "email"
@@ -161,7 +165,6 @@ def profile(request):
         elif "update_reports_allowed" in request.POST:
             form = ReportSettingsForm(request.POST)
             if form.is_valid():
-                print(form.cleaned_data)
                 user_profile.reports_allowed = True
                 if form.cleaned_data['report_duration'] == 'never':
                     user_profile.reports_allowed = False
@@ -201,6 +204,12 @@ def profile(request):
                 farewell_user.profile.current_team = None
                 farewell_user.profile.save()
 
+                # Remove user from channel integrations
+                farewell_user_channel = Channel.objects.filter(
+                        user=request.user, value=email)
+                for channel in farewell_user_channel:
+                    channel.delete()
+
                 Member.objects.filter(team=user_profile,
                                       user=farewell_user).delete()
 
@@ -219,7 +228,6 @@ def profile(request):
             if not user_profile.team_access_allowed:
                 return HttpResponseForbidden()
             data = dict(request.POST.iterlists())
-            print(data)
 
             emails = [str(i) for i in data.get('email')]
             priorities = [int(i) for i in data.get('priority')]

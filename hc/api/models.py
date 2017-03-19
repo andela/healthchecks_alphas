@@ -82,7 +82,6 @@ class Check(models.Model):
         errors = []
 
         for channel in self.channel_set.all():
-            print("\n** Channel dict: ", channel.__dict__)
             error = channel.notify(self)
             if error not in ("", "no-op"):
                 errors.append((channel, error))
@@ -90,7 +89,7 @@ class Check(models.Model):
         return errors
 
     def send_priority_alert(self, member, priority_delay):
-        print("\n\n %% Prioritize notifications %%\n\n")
+        print("\n\n Sending Alert to Prioritized Member... \n")
         # Only alert the next member in the priority list
         if self.status not in ("up", "down"):
             raise NotImplementedError("Unexpected status: %s" % self.status)
@@ -103,12 +102,8 @@ class Check(models.Model):
         errors = []
 
         q = self.channel_set.all()
-        print ("Channels set: ", q)
-        print ("Member: ", member)
         member_channels = q.filter(value=member.user.email)
-        print ("Member channels: ", member_channels)
         for channel in member_channels:
-            print("\n** Channel priority  dict: ", channel.__dict__)
             error = channel.notify(self)
             if error not in ("", "no-op"):
                 errors.append((channel, error))

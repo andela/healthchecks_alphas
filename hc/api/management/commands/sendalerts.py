@@ -29,7 +29,7 @@ class Command(BaseCommand):
             )]
         checks_with_priorities = [check for check in query if check.user in
                                   users_with_priorities]
-        # if
+
         now = timezone.now()
         going_down = query.filter(alert_after__lt=now, status="up")
         going_up = query.filter(alert_after__gt=now, status="down")
@@ -43,7 +43,9 @@ class Command(BaseCommand):
         checks_not_scheduled = query.filter(
                 next_priority_notification__isnull=True)
 
-        print("\n>>> Checks with priorities: ", checks_with_priorities)
+        for check in checks:
+            print ("check : ", check.__dict__)
+
         futures = [executor.submit(self.handle_one, check, check in
                                    checks_with_priorities) for check in checks]
         for future in futures:
@@ -57,7 +59,6 @@ class Command(BaseCommand):
         Return False if no checks need to be processed.
 
         """
-        print ("**** Prioritize ******", prioritize)
         check_owner = Profile.objects.get(user=check.user)
 
         now = timezone.now()
@@ -108,6 +109,7 @@ class Command(BaseCommand):
                 ticks = 1
             else:
                 ticks += 1
+            print ("Ticks: ", ticks)
             time.sleep(1)
             if ticks % 10 == 0:
                 formatted = timezone.now().isoformat()
