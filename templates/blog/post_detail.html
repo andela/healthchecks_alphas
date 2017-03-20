@@ -4,9 +4,17 @@
 	<div class="col-sm-8 col-sm-offset-2">
 	  <h2><b>{{ post.title }}</b></h2>
 	  <p>{{ post.content }}</p>
-	</div>
+	
 
 	<a class="btn btn-default" href="{% url 'post_remove' pk=post.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+
+	<hr>
+	{% for comment in post.comments.all %}
+		<p>{{ comment.body|linebreaks }}</p>
+	{% empty %}
+		<p>No comments here yet :(</p>
+	{% endfor %}
+	</div>
 {% endblock %}
 
 <script>
