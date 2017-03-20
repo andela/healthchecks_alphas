@@ -1,9 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-Create Post
-   <form action="." method="post">
-     {{ form.as_p }}
-     {% csrf_token %}
-     <input type="submit" value="Create Post">
-   </form>
+<div class="col-sm-8 col-sm-offset-2">
+	<h2>Create Post</h2>
+	   <form action="." method="post">
+	     {% csrf_token %}
+	     Title
+	     <input type="text" name="title" id="id_title" class="form-control">
+	     <br />
+	     Content
+	     <textarea name="content" id="id_content" class="form-control"></textarea>
+	     <br />
+	     <input type="submit" value="Create Post" class="btn btn-primary">
+	   </form>
+</div>
 {% endblock %}
