@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="col-sm-8 col-sm-offset-2">
+	  <h2><b>{{ post.title }}</b></h2>
+	  <p>{{ post.content }}</p>
+	
+
+	<a class="btn btn-danger" href="{% url 'post_remove' pk=post.pk %}">Delete Post</a>
+	<br />
+	<br />
+	<br />
+	<a href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
+	{% for comment in post.comments.all %}
+		<hr>
+		<p>{{ comment.body|linebreaks }}</p>
+	{% empty %}
+		<p>No comments here yet :(</p>
+	{% endfor %}
+	</div>
+{% endblock %}
+
+<script>
+	alert({{ message }});
+</script>
