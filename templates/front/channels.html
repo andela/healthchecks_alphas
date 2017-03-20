@@ -28,6 +28,7 @@
         <tr class="channel-row">
             <td>
             {% if ch.kind == "email" %} Email {% endif %}
+            {% if ch.kind == "sms" %} SMS {% endif %}
             {% if ch.kind == "webhook" %} Webhook {% endif %}
             {% if ch.kind == "slack" %} Slack {% endif %}
             {% if ch.kind == "hipchat" %} HipChat {% endif %}
@@ -43,6 +44,9 @@
                     {% if not ch.email_verified %}
                         <span class="channel-unconfirmed">(unconfirmed)</span>
                     {% endif %}
+                {% elif ch.kind == "sms" %}
+                    <span class="preposition">Phone Number</span>
+                    {{ ch.value }}
                 {% elif ch.kind == "pd" %}
                     <span class="preposition">API key</span>
                     {{ ch.value }}
@@ -143,6 +147,16 @@
 
             <a href="{% url 'hc-add-email' %}" class="btn btn-primary">Add Integration</a>
         </li>
+        {% if sms %}
+        <li>
+            <img src="{% static 'img/integrations/sms.png' %}" class="icon" alt="SMS icon" />
+
+            <h2>SMS</h2>
+            <p>Get an SMS when check goes up or down.</p>
+
+            <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#set-phone-number-modal">Add Integration</a>
+        </li>
+        {% endif %}
         <li>
             <img src="{% static 'img/integrations/webhook.png' %}"
                 class="icon" alt="Webhook icon" />
@@ -244,6 +258,44 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<div id="set-phone-number-modal" class="modal fade">
+    <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="remove-check-title">Set SMS Integration</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <p>Get an SMS when check goes up or down.</p>
+
+                            <p>
+                                <strong>Tip:</strong> Add multiple phone numbers to notify multiple team members.
+                            </p>
+                            <br>
+
+                            <form method="post" class="form-horizontal" action="{% url 'hc-add-channel' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="kind" value="sms" />
+                                <div class="form-group">
+                                    <label for="sms" class="col-sm-3 control-label">Phone Number</label>
+                                    <div class="col-sm-6">
+                                        <input id="sms" type="text" class="form-control" name="value" placeholder="+[Country code][Phone Number]">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save Integration</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>       
+            </div>
     </div>
 </div>
 

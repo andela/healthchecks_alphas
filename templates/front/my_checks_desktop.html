@@ -23,7 +23,8 @@
                 <span class="status icon-paused"
                     data-toggle="tooltip" title="Monitoring paused. Ping to resume."></span>
             {% elif check.in_grace_period %}
-                <span class="status icon-grace"></span>
+                <span class="status icon-grace"
+                    data-toggle="tooltip" title="Monitoring in grace period."></span>
             {% elif check.get_status == "up" %}
                 <span class="status icon-up"
                     data-toggle="tooltip" title="Check status- UP"></span>
