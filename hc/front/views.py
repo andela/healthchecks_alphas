@@ -186,7 +186,6 @@ def update_name(request, code):
         check.name = form.cleaned_data["name"]
         check.tags = form.cleaned_data["tags"]
         check.save()
-        print(form.cleaned_data)
 
     if form.cleaned_data["page"] == "failed-jobs":
         return redirect("hc-failed-jobs")
