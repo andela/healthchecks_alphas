@@ -23,8 +23,6 @@ $(function() {
             $("#checks-modal .modal-content").html(data);
 
         })
-
-
         return false;
     });
 
@@ -32,12 +30,10 @@ $(function() {
     $cm.on("click", "#toggle-all", function() {
         var value = $(this).prop("checked");
         $cm.find(".toggle").prop("checked", value);
-
     });
 
     $(".channel-remove").click(function() {
         var $this = $(this);
-
         $("#remove-channel-form").attr("action", $this.data("url"));
         $(".remove-channel-name").text($this.data("name"));
         $('#remove-channel-modal').modal("show");

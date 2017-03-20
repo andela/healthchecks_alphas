@@ -298,7 +298,8 @@ def channels(request):
         channel.checks = new_checks
         return redirect("hc-channels")
 
-    channels = Channel.objects.filter(user=request.team.user).order_by("created")
+    channels = Channel.objects.filter(
+            user=request.team.user).order_by("created")
     channels = channels.annotate(n_checks=Count("checks"))
 
     num_checks = Check.objects.filter(user=request.team.user).count()

@@ -130,9 +130,6 @@ class Check(models.Model):
         if self.user:
             channels = Channel.objects.filter(user=self.user)
             self.channel_set.add(*channels)
-            # profile = Profile.objects.get(user=self.user)
-            # member_channels = Channel.objects.filter(team=profile)
-            # self.channel_set.add(*member_channels)
 
     def tags_list(self):
         return [t.strip() for t in self.tags.split(" ") if t.strip()]
