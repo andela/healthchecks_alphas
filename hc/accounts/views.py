@@ -38,6 +38,7 @@ def _make_user(email):
     # Make user a member of their own team
     user_membership = Member(team=user_profile, user=user)
     user_membership.save()
+    user_membership.assign_all_checks()
 
     channel = Channel()
     channel.user = user
@@ -279,7 +280,6 @@ def profile(request):
             channel_checks = Channel.objects.filter(
                     user=request.team.user, value=member[0].user.email
             )[0].checks = union_checks
-
 
     tags = set()
     checks = Check.objects.filter(user=request.team.user)
