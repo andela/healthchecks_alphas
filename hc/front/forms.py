@@ -5,6 +5,7 @@ from hc.api.models import Channel
 class NameTagsForm(forms.Form):
     name = forms.CharField(max_length=100, required=False)
     tags = forms.CharField(max_length=500, required=False)
+    page = forms.CharField(max_length=500, required=False)
 
     def clean_tags(self):
         l = []
@@ -21,6 +22,8 @@ class TimeoutForm(forms.Form):
     timeout = forms.IntegerField(min_value=60, max_value=2592000)
     grace = forms.IntegerField(min_value=60, max_value=2592000)
     nag = forms.IntegerField(min_value=60, max_value=2592000)
+    page = forms.CharField(max_length=500, required=False)
+
 
 class AddChannelForm(forms.ModelForm):
 
