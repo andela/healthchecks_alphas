@@ -92,13 +92,11 @@ TEST_RUNNER = 'hc.api.tests.CustomRunner'
 # }
 
 DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'eugeneliyai',
-            'TEST': {'CHARSET': 'UTF8'}
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME':   './hc.sqlite',
     }
+}
 
 
 import dj_database_url
@@ -150,8 +148,7 @@ STATICFILES_FINDERS = (
 COMPRESS_OFFLINE = True
 
 EMAIL_BACKEND = 'sgbackend.SendGridBackend'
-#SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
-SENDGRID_API_KEY = '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'
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 
 # Slack integration -- override these in local_settings
 SLACK_CLIENT_ID = None
