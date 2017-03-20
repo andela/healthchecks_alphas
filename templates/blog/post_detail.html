@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {% include "blog/_post_list.html" with post=post only%}
+  <h2><b>{{ post.title }}</b></h2>
+  <p>{{ post.content }}</p>
+
 {% endblock %}
