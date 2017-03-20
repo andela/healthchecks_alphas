@@ -108,6 +108,13 @@ $(function() {
         return false;
     });
 
+    var $allowed_checks_modal = $("#set-allowed-checks-modal");
+    $allowed_checks_modal.on("click", "#toggle-all", function() {
+        var value = $(this).prop("checked");
+        $allowed_checks_modal.find(".toggle").prop("checked", value);
+
+    });
+
 //    $(".edit-checks").click(function() {
 //        var $this = $(this);
 //
