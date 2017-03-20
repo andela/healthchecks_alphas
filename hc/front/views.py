@@ -207,12 +207,12 @@ def update_timeout(request, code):
         check.timeout = td(seconds=form.cleaned_data["timeout"])
         check.grace = td(seconds=form.cleaned_data["grace"])
         check.nag = td(seconds=form.cleaned_data["nag"])
-        if form.cleaned_data['priority'] == 'HIGH':
-            check.check_priority = REPORT_DURATIONS[0][0]
-        elif form.cleaned_data['priority'] == 'LOW':
-            check.check_priority = REPORT_DURATIONS[1][0]
-        elif form.cleaned_data['priority'] == 'MEDIUM':
-            check.check_priority = REPORT_DURATIONS[2][0]
+        if form.cleaned_data['priority'] == 0:
+            check.check_priority = 0
+        elif form.cleaned_data['priority'] == 2:
+            check.check_priority = 2
+        elif form.cleaned_data['priority'] == 1:
+            check.check_priority = 1
         else:
             return HttpResponseBadRequest()
         check.save()
