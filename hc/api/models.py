@@ -22,7 +22,7 @@ STATUSES = (
 DEFAULT_TIMEOUT = td(days=1)
 DEFAULT_GRACE = td(hours=1)
 DEFAULT_NAG = td(hours=1)
-CHANNEL_KINDS = (("email", "Email"), ("webhook", "Webhook"),
+CHANNEL_KINDS = (("email", "Email"), ("webhook", "Webhook"), ("sms", "SMS"),
                  ("hipchat", "HipChat"),
                  ("slack", "Slack"), ("pd", "PagerDuty"), ("po", "Pushover"),
                  ("victorops", "VictorOps"))
@@ -178,6 +178,8 @@ class Channel(models.Model):
     def transport(self):
         if self.kind == "email":
             return transports.Email(self)
+        elif self.kind == "sms":
+            return transports.Sms(self)
         elif self.kind == "webhook":
             return transports.Webhook(self)
         elif self.kind == "slack":
@@ -199,7 +201,7 @@ class Channel(models.Model):
         # Make 3 attempts--
         for x in range(0, 3):
             error = self.transport.notify(check) or ""
-            if error in ("", "no-op"):
+            if error in ("", "no-op", "None"):
                 break  # Success!
 
         if error != "no-op":
