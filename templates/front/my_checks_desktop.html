@@ -11,6 +11,7 @@
             <span class="checks-subline">Nag</span>
         </th>
         <th>Last Ping</th>
+        <th>Priority</th>
         <th></th>
     </tr>
     {% for check in checks %}
@@ -54,14 +55,17 @@
             </button>
         </td>
         <td class="timeout-cell">
-            <span
+            <span 
+                id = '{{ check.check_priority }}'
+                onClick="set_priority(this.id)"
+
                 data-url="{% url 'hc-update-timeout' check.code %}"
                 data-timeout="{{ check.timeout.total_seconds }}"
                 data-grace="{{ check.grace.total_seconds }}"
                 {% if check.nag != None%}
                 data-nag="{{ check.nag.total_seconds }}"
                 {% endif %}
-                class="timeout-grace">
+                class="timeout-grace"
                 {{ check.timeout|hc_duration }}
                 <br />
                 <span class="checks-subline">
@@ -85,6 +89,15 @@
         {% else %}
             Never
         {% endif %}
+        </td>
+        <td>
+            {% if check.check_priority == 0 %}
+                <span class="label label-danger">High</span>
+            {% elif check.check_priority == 1%}
+                <span class="label label-info">Medium</span>
+            {% else %}
+                <span class="label label-default">Low</span>
+            {% endif %}
         </td>
         <td>
             <div class="check-menu dropdown">

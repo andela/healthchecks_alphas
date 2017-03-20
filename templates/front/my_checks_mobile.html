@@ -64,6 +64,18 @@
                     {% endif %}
                 </td>
             </tr>
+            <tr>
+                <th>Priority</th>
+                <td>
+                    {% if check.check_priority == 0 %}
+                        <span class="label label-danger">High</span>
+                    {% elif check.check_priority == 1%}
+                        <span class="label label-info">Medium</span>
+                    {% else %}
+                        <span class="label label-default">Low</span>
+                    {% endif %}
+                </td>
+            </tr>
         </table>
 
 

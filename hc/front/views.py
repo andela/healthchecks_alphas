@@ -29,13 +29,16 @@ def pairwise(iterable):
 
 @login_required
 def my_checks(request):
-    q = Check.objects.filter(user=request.team.user).order_by("created")
+    q = Check.objects.filter(user=request.team.user).order_by("check_priority")
     checks = list(q)
 
     counter = Counter()
-    down_tags, grace_tags, nag_tags = set(), set(), set()
+    down_tags, grace_tags, nag_tags, priority = set(), set(), set(), set()
     for check in checks:
         status = check.get_status()
+
+        priority.add(check.check_priority)
+
         for tag in check.tags_list():
             if tag == "":
                 continue
@@ -57,7 +60,8 @@ def my_checks(request):
         "down_tags": down_tags,
         "grace_tags": grace_tags,
         "nag_tags": nag_tags,
-        "ping_endpoint": settings.PING_ENDPOINT
+        "ping_endpoint": settings.PING_ENDPOINT,
+        "check_prio": priority,
     }
 
     return render(request, "front/my_checks.html", ctx)
@@ -203,6 +207,14 @@ def update_timeout(request, code):
         check.timeout = td(seconds=form.cleaned_data["timeout"])
         check.grace = td(seconds=form.cleaned_data["grace"])
         check.nag = td(seconds=form.cleaned_data["nag"])
+        if form.cleaned_data['priority'] == 0:
+            check.check_priority = 0
+        elif form.cleaned_data['priority'] == 2:
+            check.check_priority = 2
+        elif form.cleaned_data['priority'] == 1:
+            check.check_priority = 1
+        else:
+            return HttpResponseBadRequest()
         check.save()
 
     return redirect("hc-checks")

@@ -35,6 +35,11 @@ PO_PRIORITIES = {
     2: "emergency"
 }
 
+PPRIORITY_CHOICES = (
+        (0, 'HIGH'),
+        (1, 'MEDIUM'),
+        (2, 'LOW'),
+    )
 
 class Check(models.Model):
 
@@ -56,6 +61,11 @@ class Check(models.Model):
     nag = models.DurationField(null=True)
     nag_after = models.DateTimeField(null=True, blank=True)
     last_nag_alert = models.DateTimeField(null=True, blank=True)
+    check_priority = models.IntegerField(choices=PPRIORITY_CHOICES, default=1)
+
+    @property
+    def get_check_priority(self):
+        return check_priority
 
     def name_then_code(self):
         if self.name:
