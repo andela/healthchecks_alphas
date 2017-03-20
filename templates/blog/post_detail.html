@@ -5,4 +5,10 @@
 	  <h2><b>{{ post.title }}</b></h2>
 	  <p>{{ post.content }}</p>
 	</div>
+
+	<a class="btn btn-default" href="{% url 'post_remove' pk=post.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
 {% endblock %}
+
+<script>
+	alert({{ message }});
+</script>

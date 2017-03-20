@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.views.generic import DetailView
 from django.contrib.auth.decorators import login_required
 
@@ -30,3 +30,8 @@ def create_post(request):
 		form = BlogPostForm()
 
 	return render(request, 'blog/create.html', {'form': form})
+
+def post_remove(request, pk):
+	post = get_object_or_404(Post, pk=pk)
+	post.delete()
+	return redirect('/blog/', {'message':'Delete successful'})

@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<a href="/blog/create/">Create Post</a>
   {% for post in posts %}
     {% include "blog/_post_list.html" with post=post only%}
   {% empty %}
