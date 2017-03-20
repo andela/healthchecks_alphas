@@ -256,6 +256,26 @@ def profile(request):
                 raise e
         elif "set_allowed_checks" in request.POST:
             print ("Allowed checks!", request.POST)
+            new_checks = []
+            for key in request.POST:
+                if key.startswith("check-"):
+                    code = key[6:]
+                    try:
+                        check = Check.objects.get(code=code)
+                    except Check.DoesNotExist:
+                        return HttpResponseBadRequest()
+                    if check.user_id != request.team.user.id:
+                        return HttpResponseForbidden()
+                    new_checks.append(check)
+            print ("Email : ", request.POST['email'])
+            member_user = User.objects.get(email=request.POST['email'])
+            print ("Memberuser : ", member_user)
+            member = Member.objects.filter(user=member_user, team=user_profile)
+            print ("Member: ", member)
+            member[0].allowed_checks = new_checks
+            # member[0].save()
+            # member
+            # return redirect("hc-channels")
 
     tags = set()
     checks = Check.objects.filter(user=request.team.user)

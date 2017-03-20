@@ -95,11 +95,14 @@ $(function() {
     });
 
     $(".edit-checks").click(function() {
+        var $this = $(this);
         $("#set-allowed-checks-modal").modal("show");
         var url = $(this).attr("href");
         console.log("Url: " + url)
         $.ajax(url).done(function(data) {
             $("#set-allowed-checks-modal .modal-content").html(data);
+            $("#set-checks-email").text($this.data("email"));
+            $("#set-checks-team-member-email").val($this.data("email"));
         })
 
         return false;
