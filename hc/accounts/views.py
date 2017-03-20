@@ -12,7 +12,7 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.core import signing
 from django.http import HttpResponseForbidden, HttpResponseBadRequest, HttpResponse, JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
 from django.utils import timezone
@@ -20,6 +20,7 @@ from hc.accounts.forms import (EmailPasswordForm, InviteTeamMemberForm,
                                RemoveTeamMemberForm, ReportSettingsForm,
                                SetPasswordForm, TeamNameForm)
 from hc.accounts.models import Profile, Member, REPORT_DURATIONS
+from hc.api.decorators import uuid_or_400
 from hc.api.models import Channel, Check
 from hc.lib.badges import get_badge_url
 
@@ -253,9 +254,14 @@ def profile(request):
                 raise e
             except Exception as e:
                 raise e
+        elif "set_allowed_checks" in request.POST:
+            print ("Allowed checks!", request.POST)
 
     tags = set()
-    for check in Check.objects.filter(user=request.team.user):
+    checks = Check.objects.filter(user=request.team.user)
+    num_checks = len(checks)
+
+    for check in checks:
         tags.update(check.tags_list())
 
     username = request.team.user.username
@@ -266,14 +272,40 @@ def profile(request):
 
         badge_urls.append(get_badge_url(username, tag))
 
+
     ctx = {
         "page": "profile",
+        # "checks": list(checks),
         "badge_urls": badge_urls,
         "profile": user_profile,
+        "num_checks": num_checks,
         "show_api_key": show_api_key
     }
 
     return render(request, "accounts/profile.html", ctx)
+
+
+@login_required
+# @uuid_or_400
+def member_checks(request, member_id):
+
+    print ("\n\n ### Hello")
+    # assert request.method == "POST"
+    user_profile = request.user.profile
+    member_user = User.objects.get(id=member_id)
+    member = Member.objects.get(
+            team=user_profile, user=member_user)
+    allowed_checks = member.allowed_checks.all()
+    print ("allowed checks : ", allowed_checks)
+
+    checks = Check.objects.filter(user=request.team.user)
+
+    ctx = {
+        "checks": list(checks),
+        "assigned": list(allowed_checks),
+    }
+
+    return render(request, "accounts/member_checks.html", ctx)
 
 
 @login_required

@@ -74,3 +74,14 @@ li {
     color: #d9534f;
 }
 
+table#team-members-table > tbody > tr > th {
+    border-top: 0;
+}
+
+.edit-checks {
+    border: 1px dotted #e5e5e5;
+}
+
+.edit-checks:hover {
+    background: #f9f9f9;
+}

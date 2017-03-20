@@ -94,6 +94,27 @@ $(function() {
         return false;
     });
 
+    $(".edit-checks").click(function() {
+        $("#set-allowed-checks-modal").modal("show");
+        var url = $(this).attr("href");
+        console.log("Url: " + url)
+        $.ajax(url).done(function(data) {
+            $("#set-allowed-checks-modal .modal-content").html(data);
+        })
+
+        return false;
+    });
+
+//    $(".edit-checks").click(function() {
+//        var $this = $(this);
+//
+//        $("#set-checks-email").text($this.data("email"));
+//        $("#set-checks-team-member-email").val($this.data("email"));
+//        $('#set-allowed-checks-modal').modal("show");
+//
+//        return false;
+//    });
+
 
 
 });

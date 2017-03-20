@@ -161,6 +161,7 @@ def update_name(request, code):
         return HttpResponseForbidden()
 
     form = NameTagsForm(request.POST)
+
     if form.is_valid():
         check.name = form.cleaned_data["name"]
         check.tags = form.cleaned_data["tags"]
