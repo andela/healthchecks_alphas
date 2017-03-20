@@ -10,7 +10,7 @@ class Post(models.Model):
     '''
     title = models.CharField(max_length=250)
     content = models.TextField()
-    author = models.ForeignKey(User, blank=True, null=True)
+    author = models.ForeignKey(User)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
