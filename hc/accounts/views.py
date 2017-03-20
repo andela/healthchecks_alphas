@@ -22,6 +22,7 @@ from hc.accounts.forms import (EmailPasswordForm, InviteTeamMemberForm,
 from hc.accounts.models import Profile, Member, REPORT_DURATIONS
 from hc.api.decorators import uuid_or_400
 from hc.api.models import Channel, Check
+from hc.front.templatetags.hc_extras import register
 from hc.lib.badges import get_badge_url
 
 
@@ -255,7 +256,6 @@ def profile(request):
             except Exception as e:
                 raise e
         elif "set_allowed_checks" in request.POST:
-            print ("Allowed checks!", request.POST)
             new_checks = []
             for key in request.POST:
                 if key.startswith("check-"):
@@ -267,15 +267,19 @@ def profile(request):
                     if check.user_id != request.team.user.id:
                         return HttpResponseForbidden()
                     new_checks.append(check)
-            print ("Email : ", request.POST['email'])
             member_user = User.objects.get(email=request.POST['email'])
-            print ("Memberuser : ", member_user)
             member = Member.objects.filter(user=member_user, team=user_profile)
-            print ("Member: ", member)
             member[0].allowed_checks = new_checks
-            # member[0].save()
-            # member
-            # return redirect("hc-channels")
+
+            # Update channel allowed checks as well
+            channel_checks = Channel.objects.filter(
+                    user=request.team.user, value=member[0].user.email
+            )[0].checks.all()
+            union_checks = set(channel_checks) & set(new_checks)
+            channel_checks = Channel.objects.filter(
+                    user=request.team.user, value=member[0].user.email
+            )[0].checks = union_checks
+
 
     tags = set()
     checks = Check.objects.filter(user=request.team.user)
@@ -303,6 +307,11 @@ def profile(request):
     }
 
     return render(request, "accounts/profile.html", ctx)
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
 
 
 @login_required

@@ -87,7 +87,11 @@
             <td class="channels-num-checks">
                 <a
                     class="edit-checks"
-                    href="{% url 'hc-channel-checks' ch.code %}">
+                    {% if members|get_item:ch.value %}
+                        href="{% url 'hc-channel-checks' ch.code members|get_item:ch.value %}"
+                    {% else %}
+                        href="{% url 'hc-channel-checks' ch.code 0 %}"
+                    {% endif %}>
                     {{ ch.n_checks }} of {{ num_checks }}
                 </a>
             </td>

@@ -21,7 +21,6 @@ $(function() {
         var url = $(this).attr("href");
         $.ajax(url).done(function(data) {
             $("#checks-modal .modal-content").html(data);
-
         })
         return false;
     });

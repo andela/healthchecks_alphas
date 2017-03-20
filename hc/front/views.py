@@ -7,6 +7,7 @@ import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db.models import Count
 from django.http import Http404, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
@@ -43,8 +44,6 @@ def my_checks(request):
     if member:
         print("\n\n *** Member checking dict: ", member[0].__dict__)
         allowed_member_checks = member[0].allowed_checks.all()
-        for i in allowed_member_checks:
-            print("\n\n *** Allowed check name: ", i.name)
         # If not team owner
         if request.user != request.team.user:
             checks = [check for check in checks if check in
@@ -302,11 +301,21 @@ def channels(request):
             user=request.team.user).order_by("created")
     channels = channels.annotate(n_checks=Count("checks"))
 
+    user_profile = request.user.profile
+    values_list = [channel.value for channel in channels]
+    print ("Email list!!: ", values_list)
+    members = {member.user.email: member.user.id for member in
+               Member.objects.filter(team=user_profile) if
+               member.user.email
+               in values_list}
+
     num_checks = Check.objects.filter(user=request.team.user).count()
 
+    print ("Members channels!!: ", members)
     ctx = {
         "page": "channels",
         "channels": channels,
+        "members": members,
         "num_checks": num_checks,
         "enable_pushbullet": settings.PUSHBULLET_CLIENT_ID is not None,
         "enable_pushover": settings.PUSHOVER_API_TOKEN is not None
@@ -339,17 +348,22 @@ def add_channel(request):
 
 @login_required
 @uuid_or_400
-def channel_checks(request, code):
+def channel_checks(request, code, member_id):
+    print ("Member id channel checks: ", member_id)
     channel = get_object_or_404(Channel, code=code)
     if channel.user_id != request.team.user.id:
         return HttpResponseForbidden()
 
     assigned = set(channel.checks.values_list('code', flat=True).distinct())
     checks = Check.objects.filter(user=request.team.user).order_by("created")
+    member_user = User.objects.get(id=member_id)
+    allowed = list(Member.objects.get(user=member_user).allowed_checks.all())
 
+    print("Allowed channel checks: ", allowed)
     ctx = {
         "checks": checks,
         "assigned": assigned,
+        "allowed": allowed,
         "channel": channel
     }
 
