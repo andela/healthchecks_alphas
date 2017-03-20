@@ -6,11 +6,13 @@
 	  <p>{{ post.content }}</p>
 	
 
-	<a class="btn btn-default" href="{% url 'post_remove' pk=post.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-
-	<hr>
-	<a class="btn btn-default" href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
+	<a class="btn btn-danger" href="{% url 'post_remove' pk=post.pk %}">Delete Post</a>
+	<br />
+	<br />
+	<br />
+	<a href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
 	{% for comment in post.comments.all %}
+		<hr>
 		<p>{{ comment.body|linebreaks }}</p>
 	{% empty %}
 		<p>No comments here yet :(</p>
