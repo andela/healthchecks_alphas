@@ -63,6 +63,10 @@ class Check(models.Model):
     last_nag_alert = models.DateTimeField(null=True, blank=True)
     check_priority = models.IntegerField(choices=PPRIORITY_CHOICES, default=1)
 
+    @property
+    def get_check_priority(self):
+        return check_priority
+
     def name_then_code(self):
         if self.name:
             return self.name

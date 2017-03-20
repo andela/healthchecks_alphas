@@ -171,22 +171,18 @@
                             <span>Set priority</span>
                         </p>
                     </div>
-
                     <div class="radio radio-danger radio-inline" style="margin-top: 0px;">
-                        <input type="radio" id="inlineRadio1" value="HIGH" name="priority" 
-                        {% if check.check_priority == 0 %} checked {% endif %} >
-                        <label for="inlineRadio1">High</label>
+                        <input type="radio" id="high_priority" value="HIGH" name="priority">
+                        <label for="high_priority">High</label>
                     </div>
                     <div class="radio radio-info radio-inline">
-                        <input type="radio" id="inlineRadio2" value="MEDIUM" name="priority" 
-                        {% if check.check_priority == 1 %} checked {% endif %} >
-                        <label for="inlineRadio2">Medium</label>
+                        <input type="radio" id="medium_priority" value="MEDIUM" name="priority" >
+                        <label for="medium_priority">Medium</label>
                     </div>
 
                     <div class="radio radio-inline">
-                        <input type="radio" id="inlineRadio3" value="LOW" name="priority" 
-                        {% if check.check_priority == 2 %} checked {% endif %} >
-                        <label for="inlineRadio3">Low</label>
+                        <input type="radio" id="low_priority" value="LOW" name="priority" >
+                        <label for="low_priority">Low</label>
                     </div>
 
                     <br>
@@ -333,5 +329,19 @@
 <script src="{% static 'js/nouislider.min.js' %}"></script>
 <script src="{% static 'js/clipboard.min.js' %}"></script>
 <script src="{% static 'js/checks.js' %}"></script>
+<script type="text/javascript">
+    function set_priority(priority)
+        {
+            if (priority == 0) {
+                document.getElementById("high_priority").checked = true;
+            }
+            else if (priority == 1) {
+                document.getElementById("medium_priority").checked = true;
+            }
+            else if (priority == 2) {
+                document.getElementById("low_priority").checked = true;
+            }
+        }
+</script>
 {% endcompress %}
 {% endblock %}

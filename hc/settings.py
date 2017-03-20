@@ -82,12 +82,24 @@ TEST_RUNNER = 'hc.api.tests.CustomRunner'
 
 # Default database engine is SQLite. So one can just check out code,
 # install requirements.txt and do manage.py runserver and it works
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME':   './hc.sqlite',
+#         'USER': 'eugeneliyai',
+#         'TEST': {'CHARSET': 'UTF8'}
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':   './hc.sqlite',
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'eugeneliyai',
+            'TEST': {'CHARSET': 'UTF8'}
+        }
     }
-}
+
 
 import dj_database_url
 db_from_env = dj_database_url.config()
@@ -124,7 +136,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-SITE_ROOT = "https://hc-alphas-py2.herokuapp.com"
+SITE_ROOT = "http://localhost:8000/"
 PING_ENDPOINT = SITE_ROOT + "/ping/"
 PING_EMAIL_DOMAIN = HOST
 STATIC_URL = '/static/'
@@ -138,7 +150,8 @@ STATICFILES_FINDERS = (
 COMPRESS_OFFLINE = True
 
 EMAIL_BACKEND = 'sgbackend.SendGridBackend'
-SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+#SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+SENDGRID_API_KEY = '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'
 
 # Slack integration -- override these in local_settings
 SLACK_CLIENT_ID = None
