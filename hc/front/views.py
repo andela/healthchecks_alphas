@@ -63,6 +63,7 @@ def my_checks(request):
     return render(request, "front/my_checks.html", ctx)
 
 
+@login_required
 def failed_jobs(request):
     q = Check.objects.filter(user=request.team.user).order_by("created")
     checks = [check for check in list(q) if check.get_status() == "down"]
@@ -185,8 +186,12 @@ def update_name(request, code):
         check.name = form.cleaned_data["name"]
         check.tags = form.cleaned_data["tags"]
         check.save()
+        print(form.cleaned_data)
 
-    return redirect("hc-checks")
+    if form.cleaned_data["page"] == "failed-jobs":
+        return redirect("hc-failed-jobs")
+    else:
+        return redirect("hc-checks")
 
 
 @login_required
@@ -205,7 +210,10 @@ def update_timeout(request, code):
         check.nag = td(seconds=form.cleaned_data["nag"])
         check.save()
 
-    return redirect("hc-checks")
+    if form.cleaned_data["page"] == "failed-jobs":
+        return redirect("hc-failed-jobs")
+    else:
+        return redirect("hc-checks")
 
 
 @login_required
@@ -220,7 +228,11 @@ def pause(request, code):
     check.status = "paused"
     check.save()
 
-    return redirect("hc-checks")
+    if request.POST.get('page') == 'failed-jobs':
+        return redirect("hc-failed-jobs")
+
+    elif request.POST.get('page', 'checks') == 'checks':
+        return redirect("hc-checks")
 
 
 @login_required
@@ -322,6 +334,7 @@ def channels(request):
 
     ctx = {
         "page": "channels",
+        "sms": settings.TWILIO,
         "channels": channels,
         "num_checks": num_checks,
         "enable_pushbullet": settings.PUSHBULLET_CLIENT_ID is not None,
