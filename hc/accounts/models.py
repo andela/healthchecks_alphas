@@ -18,6 +18,7 @@ REPORT_DURATIONS = (
     (30, "Monthly")
 )
 
+
 class Profile(models.Model):
     # Owner:
     user = models.OneToOneField(User, blank=True, null=True)
@@ -30,8 +31,8 @@ class Profile(models.Model):
     api_key = models.CharField(max_length=128, blank=True)
     current_team = models.ForeignKey("self", null=True)
     report_duration = models.IntegerField(choices=REPORT_DURATIONS,
-                                       default=30)
-    
+                                          default=30)
+
     def __str__(self):
         return self.team_name or self.user.email
 

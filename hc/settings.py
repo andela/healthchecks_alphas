@@ -34,6 +34,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'compressor',
     'djmail',
+    'django_twilio',
 
     'hc.accounts',
     'hc.api',
@@ -137,8 +138,15 @@ STATICFILES_FINDERS = (
 )
 COMPRESS_OFFLINE = True
 
+# SendGrid email integration -- override these in local_settings
 EMAIL_BACKEND = 'sgbackend.SendGridBackend'
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+
+# Twilio integration -- override these in local_settings
+TWILIO = True      # Set to false to disable SMS integration
+TWILIO_ACCOUNT_SID = None
+TWILIO_AUTH_TOKEN = None
+TWILIO_FROM = None
 
 # Slack integration -- override these in local_settings
 SLACK_CLIENT_ID = None

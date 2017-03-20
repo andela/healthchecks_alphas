@@ -20,7 +20,6 @@ from hc.api.models import Channel, Check
 from hc.lib.badges import get_badge_url
 
 
-
 def _make_user(email):
     username = str(uuid.uuid4())[:30]
     user = User(username=username, email=email)
@@ -158,7 +157,6 @@ def profile(request):
         elif "update_reports_allowed" in request.POST:
             form = ReportSettingsForm(request.POST)
             if form.is_valid():
-                print form.cleaned_data
                 profile.reports_allowed = True
                 if form.cleaned_data['report_duration'] == 'never':
                     profile.reports_allowed = False
@@ -170,7 +168,7 @@ def profile(request):
                     profile.report_duration = REPORT_DURATIONS[2][0]
                 else:
                     return HttpResponseBadRequest()
-                
+
                 profile.save()
                 messages.success(request, "Your settings have been updated!")
         elif "invite_team_member" in request.POST:
