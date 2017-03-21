@@ -29,6 +29,7 @@
             <td>
             {% if ch.kind == "email" %} Email {% endif %}
             {% if ch.kind == "sms" %} SMS {% endif %}
+            {% if ch.kind == "telegram" %} Telegram {% endif %}
             {% if ch.kind == "webhook" %} Webhook {% endif %}
             {% if ch.kind == "slack" %} Slack {% endif %}
             {% if ch.kind == "hipchat" %} HipChat {% endif %}
@@ -47,6 +48,12 @@
                 {% elif ch.kind == "sms" %}
                     <span class="preposition">Phone Number</span>
                     {{ ch.value }}
+                {% elif ch.kind == "telegram" %}
+                    <span class="preposition">Username</span> 
+                    {{ ch.value }} 
+                    {% if not ch.telegram_verified %}
+                        <span class="channel-unconfirmed">(unconfirmed till next alert)</span>
+                    {% endif %}
                 {% elif ch.kind == "pd" %}
                     <span class="preposition">API key</span>
                     {{ ch.value }}
@@ -120,7 +127,6 @@
                 </button>
             </td>
             <td>
-
             </td>
         </tr>
         {% endfor %}
@@ -155,6 +161,16 @@
             <p>Get an SMS when check goes up or down.</p>
 
             <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#set-phone-number-modal">Add Integration</a>
+        </li>
+        {% endif %}
+        {% if telegram %}
+        <li>
+            <img src="{% static 'img/integrations/telegram.png' %}" class="icon" alt="SMS icon" />
+
+            <h2>Telegram</h2>
+            <p>Get a Telegram bot notification when check goes up or down.</p>
+
+            <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#set-telegram-username-modal">Add Integration</a>
         </li>
         {% endif %}
         <li>
@@ -263,39 +279,77 @@
 
 <div id="set-phone-number-modal" class="modal fade">
     <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="remove-check-title">Set SMS Integration</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <p>Get an SMS when check goes up or down.</p>
-
-                            <p>
-                                <strong>Tip:</strong> Add multiple phone numbers to notify multiple team members.
-                            </p>
-                            <br>
-
-                            <form method="post" class="form-horizontal" action="{% url 'hc-add-channel' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="kind" value="sms" />
-                                <div class="form-group">
-                                    <label for="sms" class="col-sm-3 control-label">Phone Number</label>
-                                    <div class="col-sm-6">
-                                        <input id="sms" type="text" class="form-control" name="value" placeholder="+[Country code][Phone Number]">
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-primary">Save Integration</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>       
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="remove-check-title">Set SMS Integration</h4>
             </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p>Get an SMS when check goes up or down.</p>
+
+                        <p>
+                            <strong>Tip:</strong> Add multiple phone numbers to notify multiple team members.
+                        </p>
+                        <br>
+                        <form method="post" class="form-horizontal" action="{% url 'hc-add-channel' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="kind" value="sms" />
+                            <div class="form-group">
+                                <label for="sms" class="col-sm-3 control-label">Phone Number</label>
+                                <div class="col-sm-6">
+                                    <input id="sms" type="text" class="form-control" name="value" placeholder="e.g: +175689267135">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Integration</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>       
+        </div>
+    </div>
+</div>
+
+<div id="set-telegram-username-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="remove-check-title">Set Telegram Integration</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p>Get a Healthchecks Telegram bot Notification when check goes up or down.</p>
+                        <br>
+                        <p>
+                            <strong>Tip:</strong> Add multiple Telegram usernames to notify multiple team members.
+                        </p>
+                        <p class="text-primary">Search our telegram bot (<a href="https://t.me/HealthchecksIO_Bot">@HealthchecksIO_Bot</a>) on telegram and start it to allow the bot to send alerts.
+                        </p>
+                        <br>
+                        <form method="post" class="form-horizontal" action="{% url 'hc-add-channel' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="kind" value="telegram"/>
+                            <div class="form-group">
+                                <label for="telegram" class="col-sm-4 control-label">Telegram Username</label>
+                                <div class="col-sm-6">
+                                    <input id="telegram" type="text" class="form-control" name="value" placeholder="@username">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Integration</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
