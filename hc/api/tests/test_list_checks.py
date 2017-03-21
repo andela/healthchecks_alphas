@@ -64,14 +64,3 @@ class ListChecksTestCase(BaseTestCase):
         self.assertEqual(len(data["checks"]), 2)
         for check in data["checks"]:
             self.assertNotEqual(check["name"], "Bob 1")
-
-    ### Test that it accepts an api_key in the request
-
-    def test_it_shows_only_allowed_checks(self):
-        m_bob.allowed_checks = []
-
-        r = self.get()
-        data = r.json()
-        self.assertEqual(len(data["checks"]), 1)
-        for check in data["checks"]:
-            self.assertNotEqual(check["name"], "Bob 1")

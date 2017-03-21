@@ -51,4 +51,3 @@ class PrioritiesTestCase(BaseTestCase):
         # There are already two users
 
         assert self.profile.get_maximum_priority() == 3
-

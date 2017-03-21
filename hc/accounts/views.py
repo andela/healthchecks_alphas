@@ -38,7 +38,6 @@ def _make_user(email):
     # Make user a member of their own team
     user_membership = Member(team=user_profile, user=user)
     user_membership.save()
-    user_membership.assign_all_checks()
 
     channel = Channel()
     channel.user = user
@@ -318,14 +317,12 @@ def get_item(dictionary, key):
 # @uuid_or_400
 def member_checks(request, member_id):
 
-    print ("\n\n ### Hello")
     # assert request.method == "POST"
     user_profile = request.user.profile
     member_user = User.objects.get(id=member_id)
     member = Member.objects.get(
             team=user_profile, user=member_user)
     allowed_checks = member.allowed_checks.all()
-    print ("allowed checks : ", allowed_checks)
 
     checks = Check.objects.filter(user=request.team.user)
 

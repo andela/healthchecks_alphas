@@ -11,14 +11,14 @@ class ChannelChecksTestCase(BaseTestCase):
         self.channel.save()
 
     def test_it_works(self):
-        url = "/integrations/%s/checks/" % self.channel.code
+        url = "/integrations/%s/checks/%s/" % (self.channel.code, 0)
 
         self.client.login(username="alice@example.org", password="password")
         r = self.client.get(url)
         self.assertContains(r, "Assign Checks to Channel", status_code=200)
 
     def test_team_access_works(self):
-        url = "/integrations/%s/checks/" % self.channel.code
+        url = "/integrations/%s/checks/%s/" % (self.channel.code, 0)
 
         # Logging in as bob, not alice. Bob has team access so this
         # should work.
@@ -29,9 +29,10 @@ class ChannelChecksTestCase(BaseTestCase):
     def test_it_checks_owner(self):
         # channel does not belong to mallory so this should come back
         # with 403 Forbidden:
-        url = "/integrations/%s/checks/" % self.channel.code
+        url = "/integrations/%s/checks/%s/" % (self.channel.code, 0)
         self.client.login(username="charlie@example.org", password="password")
         r = self.client.get(url)
+        print("Owner status code: ", r.status_code)
         assert r.status_code == 403
 
     def test_missing_channel(self):

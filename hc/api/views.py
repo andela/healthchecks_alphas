@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
+from hc.accounts.models import Member, Profile
 from hc.api import schemas
 from hc.api.decorators import check_api_key, uuid_or_400, validate_json
 from hc.api.models import Check, Ping
@@ -66,6 +67,12 @@ def checks(request):
             check.nag = td(seconds=request.json["nag"])
 
         check.save()
+
+        # Assign this check to the user member
+        profile = Profile.objects.get(user=request.user)
+        member = Member.objects.filter(user=request.user, team=profile)
+        if member[0]:
+            member[0].assign_all_checks()
         # This needs to be done after saving the check, because of
         # the M2M relation between checks and channels:
         if request.json.get("channels") == "*":

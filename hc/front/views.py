@@ -37,12 +37,8 @@ def my_checks(request):
     team_owner = Profile.objects.get(user=request.team.user)
     member = Member.objects.filter(user=request.user, team=team_owner)
 
-    print("\n\n *** Member checking: ", member)
     checks = list(q)
-    for i in checks:
-        print("Check: ", i.name)
     if member:
-        print("\n\n *** Member checking dict: ", member[0].__dict__)
         allowed_member_checks = member[0].allowed_checks.all()
         # If not team owner
         if request.user != request.team.user:
@@ -303,7 +299,6 @@ def channels(request):
 
     user_profile = request.user.profile
     values_list = [channel.value for channel in channels]
-    print ("Email list!!: ", values_list)
     members = {member.user.email: member.user.id for member in
                Member.objects.filter(team=user_profile) if
                member.user.email
@@ -311,7 +306,6 @@ def channels(request):
 
     num_checks = Check.objects.filter(user=request.team.user).count()
 
-    print ("Members channels!!: ", members)
     ctx = {
         "page": "channels",
         "channels": channels,
@@ -349,17 +343,18 @@ def add_channel(request):
 @login_required
 @uuid_or_400
 def channel_checks(request, code, member_id):
-    print ("Member id channel checks: ", member_id)
     channel = get_object_or_404(Channel, code=code)
     if channel.user_id != request.team.user.id:
         return HttpResponseForbidden()
 
     assigned = set(channel.checks.values_list('code', flat=True).distinct())
     checks = Check.objects.filter(user=request.team.user).order_by("created")
-    member_user = User.objects.get(id=member_id)
-    allowed = list(Member.objects.get(user=member_user).allowed_checks.all())
 
-    print("Allowed channel checks: ", allowed)
+    if int(member_id):
+        member_user = User.objects.get(id=member_id)
+        allowed = list(Member.objects.get(user=member_user).allowed_checks.all())
+    else:
+        allowed = []
     ctx = {
         "checks": checks,
         "assigned": assigned,
