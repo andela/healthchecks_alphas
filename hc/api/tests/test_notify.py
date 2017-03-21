@@ -128,6 +128,14 @@ class NotifyTestCase(BaseTestCase):
         html, _ = message.alternatives[0]
         assert "/pricing/" in html
 
+    @patch("hc.api.transports.requests.get")
+    def test_telegram(self, mock_get):
+        self._setup_data("telegram", "@testprof")
+        self.channel.notify(self.check)
+
+        n = Notification.objects.get()
+        self.assertEqual(n.error, "Telegram username not verified")
+
     @patch("hc.api.transports.requests.request")
     def test_pd(self, mock_post):
         self._setup_data("pd", "123")
