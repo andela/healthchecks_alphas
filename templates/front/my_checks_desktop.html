@@ -7,6 +7,8 @@
         <th class="th-period">
             Period <br />
             <span class="checks-subline">Grace</span>
+            <br />
+            <span class="checks-subline">Nag</span>
         </th>
         <th>Last Ping</th>
         <th></th>
@@ -23,9 +25,11 @@
             {% elif check.in_grace_period %}
                 <span class="status icon-grace"></span>
             {% elif check.get_status == "up" %}
-                <span class="status icon-up"></span>
+                <span class="status icon-up"
+                    data-toggle="tooltip" title="Check status- UP"></span>
             {% elif check.get_status == "down" %}
-                <span class="status icon-down"></span>
+                <span class="status icon-down"
+                    data-toggle="tooltip" title="Check status- DOWN"></span>
             {% endif %}
         </td>
         <td class="name-cell">
@@ -54,7 +58,9 @@
                 data-url="{% url 'hc-update-timeout' check.code %}"
                 data-timeout="{{ check.timeout.total_seconds }}"
                 data-grace="{{ check.grace.total_seconds }}"
-                data-nag_interval="{{ check.nag.total_seconds }}"
+                {% if check.nag != None%}
+                data-nag="{{ check.nag.total_seconds }}"
+                {% endif %}
                 class="timeout-grace">
                 {{ check.timeout|hc_duration }}
                 <br />
@@ -63,7 +69,9 @@
                 </span>
                 <br />
                 <span class="checks-subline">
+                {% if check.nag %}
                 {{ check.nag|hc_duration }}
+                {% endif %}
                 </span>
             </span>
         </td>
@@ -84,7 +92,7 @@
                 <span class="icon-settings" aria-hidden="true"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li {% if check.status == "new" or check.status == "paused" %}class="disabled"{% endif %}>
+                    <li {% if check.status=="new" or check.status=="paused" %}class="disabled"{% endif %}>
                         <a class="pause-check"
                            href="#"
                            data-url="{% url 'hc-pause' check.code %}">

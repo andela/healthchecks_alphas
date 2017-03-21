@@ -46,7 +46,7 @@ def my_checks(request):
                       allowed_member_checks]
 
     counter = Counter()
-    down_tags, grace_tags = set(), set()
+    down_tags, grace_tags, nag_tags = set(), set(), set()
     for check in checks:
         status = check.get_status()
         for tag in check.tags_list():
@@ -57,6 +57,8 @@ def my_checks(request):
 
             if status == "down":
                 down_tags.add(tag)
+            elif status == "nag":
+                nag_tags.add(tag)
             elif check.in_grace_period():
                 grace_tags.add(tag)
 
@@ -67,10 +69,46 @@ def my_checks(request):
         "tags": counter.most_common(),
         "down_tags": down_tags,
         "grace_tags": grace_tags,
+        "nag_tags": nag_tags,
         "ping_endpoint": settings.PING_ENDPOINT
     }
 
     return render(request, "front/my_checks.html", ctx)
+
+
+def failed_jobs(request):
+    q = Check.objects.filter(user=request.team.user).order_by("created")
+    checks = [check for check in list(q) if check.get_status() == "down"]
+
+    counter = Counter()
+    down_tags, grace_tags, nag_tags = set(), set(), set()
+    for check in checks:
+        status = check.get_status()
+        for tag in check.tags_list():
+            if tag == "":
+                continue
+
+            counter[tag] += 1
+
+            if status == "down":
+                down_tags.add(tag)
+            elif status == "nag":
+                nag_tags.add(tag)
+            elif check.in_grace_period():
+                grace_tags.add(tag)
+
+    ctx = {
+        "page": "failed-jobs",
+        "checks": checks,
+        "now": timezone.now(),
+        "tags": counter.most_common(),
+        "down_tags": down_tags,
+        "grace_tags": grace_tags,
+        "nag_tags": nag_tags,
+        "ping_endpoint": settings.PING_ENDPOINT
+    }
+
+    return render(request, "front/failed_jobs.html", ctx)
 
 
 def _welcome_check(request):

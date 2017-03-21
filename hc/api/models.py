@@ -55,8 +55,10 @@ class Check(models.Model):
     last_ping = models.DateTimeField(null=True, blank=True)
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
-    nag = models.DurationField(default=DEFAULT_NAG)
     next_priority_notification = models.DateTimeField(null=True, blank=True)
+    nag = models.DurationField(null=True)
+    nag_after = models.DateTimeField(null=True, blank=True)
+    last_nag_alert = models.DateTimeField(null=True, blank=True)
 
     def name_then_code(self):
         if self.name:
@@ -156,6 +158,11 @@ class Check(models.Model):
             result["next_ping"] = None
 
         return result
+
+    def update_nag(self):
+        now = timezone.now()
+        self.nag_after = now + self.nag
+        self.last_nag_alert = now
 
 
 class Ping(models.Model):
@@ -287,6 +294,7 @@ class Channel(models.Model):
 
 
 class Notification(models.Model):
+
     class Meta:
         get_latest_by = "created"
 

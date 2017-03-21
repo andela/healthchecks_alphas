@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load compress staticfiles %}
 
-{% block title %}My Checks - healthchecks.io{% endblock %}
+{% block title %}Failed Jobs - healthchecks.io{% endblock %}
 
 
 {% block content %}
@@ -9,7 +9,7 @@
     <div class="col-sm-12">
         <h1>
         {% if request.team == request.user.profile %}
-            My Checks
+            Failed Jobs
         {% else %}
             {{ request.team.team_name }}
         {% endif %}
@@ -40,14 +40,6 @@
     {% else %}
     <div class="alert alert-info">You don't have any checks yet.</div>
     {% endif %}
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <form method="post" action="{% url 'hc-add-check' %}" class="text-center">
-            {% csrf_token %}
-            <input type="submit" class="btn btn-primary btn-lg" value="Add Check">
-        </form>
     </div>
 </div>
 
@@ -115,8 +107,8 @@
         <form id="update-timeout-form" method="post">
             {% csrf_token %}
             <input type="hidden" name="timeout" id="update-timeout-timeout" />
-            <input type="hidden" name="grace" id="update-timeout-grace" />
-            <input type="hidden" name="nag" id="update-timeout-nag" />
+              <input type="hidden" name="grace" id="update-timeout-grace" />
+            <input type="hidden" name="nag_interval" id="update-timeout-nag_interval" />
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="update-timeout-info text-center">
@@ -154,8 +146,8 @@
                         <span
                             class="update-timeout-label"
                             data-toggle="tooltip"
-                            title="When job goes down, how much time between notifications">
-                            Nag interval
+                            title="Intervals between which emails are sent when job is down.">
+                            Nag Interval
                         </span>
                         <span
                             id="nag-slider-value"
@@ -176,8 +168,8 @@
                             When a check is late, how much time to wait until alert is sent.
                         </p>
                         <p>
-                            <span>Nag interval</span>
-                            When job goes down, how much time between notifications.
+                            <span>Nag Interval</span>
+                            Intervals between which emails are sent when job is down.
                         </p>
                     </div>
 
