@@ -144,9 +144,13 @@ SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 
 # Twilio integration -- override these in local_settings
 TWILIO = True      # Set to false to disable SMS integration
-TWILIO_ACCOUNT_SID = None
-TWILIO_AUTH_TOKEN = None
-TWILIO_FROM = None
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
+TWILIO_FROM = os.environ.get('TWILIO_FROM')
+
+# Telegram integration -- overide these in local_settings
+TELEGRAM = True
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 
 # Slack integration -- override these in local_settings
 SLACK_CLIENT_ID = None
