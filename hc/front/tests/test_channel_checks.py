@@ -32,7 +32,6 @@ class ChannelChecksTestCase(BaseTestCase):
         url = "/integrations/%s/checks/%s/" % (self.channel.code, 0)
         self.client.login(username="charlie@example.org", password="password")
         r = self.client.get(url)
-        print("Owner status code: ", r.status_code)
         assert r.status_code == 403
 
     def test_missing_channel(self):

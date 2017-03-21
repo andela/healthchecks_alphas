@@ -105,6 +105,7 @@ class Profile(models.Model):
         :return: The maximum priority
         :rtype: int
         """
+        members = Member.objects.filter(team=self)
         maximum_priority = Member.objects.filter(
                 team=self).aggregate(Max('priority'))
         if maximum_priority:
@@ -176,14 +177,17 @@ def execute_after_save(sender, instance, created, *args, **kwargs):
                 user=instance.user, team=instance.team)) > 1:
             instance.delete()
         else:
-            maximum_priority = instance.team.get_maximum_priority()
-            instance.priority = maximum_priority + 1
+            if instance.team.user == instance.user:
+                instance.priority = 1
+            else:
+                maximum_priority = instance.team.get_maximum_priority()
+                instance.priority = maximum_priority + 1
             instance.save()
 
 
 @receiver(models.signals.post_delete, sender=Member)
 def member_post_delete_handler(sender, instance, **kwargs):
-    # Setet team members with priorities greater than deleted
+    # Set team members with priorities greater than deleted
     # member to minus one. But only if leaving member had
     # priority of 1 or more
     if instance.priority > 0:

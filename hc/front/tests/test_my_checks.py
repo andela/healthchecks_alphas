@@ -28,7 +28,6 @@ class MyChecksTestCase(BaseTestCase):
 
         self.client.login(username="alice@example.org", password="password")
         r = self.client.get("/checks/")
-        print("\n\nresponse green check: ", r)
 
         # Desktop
         self.assertContains(r, "icon-up")

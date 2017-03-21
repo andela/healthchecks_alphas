@@ -69,7 +69,7 @@ class ProfileTestCase(BaseTestCase):
         r = self.client.post("/accounts/profile/", form)
         assert r.status_code == 200
 
-        self.assertEqual(Member.objects.count(), 0)
+        self.assertEqual(Member.objects.count(), 1)
 
         self.bobs_profile.refresh_from_db()
         self.assertEqual(self.bobs_profile.current_team, None)
