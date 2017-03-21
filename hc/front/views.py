@@ -334,6 +334,7 @@ def channels(request):
     ctx = {
         "page": "channels",
         "sms": settings.TWILIO,
+        "telegram": settings.TELEGRAM,
         "channels": channels,
         "num_checks": num_checks,
         "enable_pushbullet": settings.PUSHBULLET_CLIENT_ID is not None,

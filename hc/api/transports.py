@@ -6,6 +6,7 @@ import requests
 from six.moves.urllib.parse import quote
 from django_twilio.decorators import twilio_view
 from twilio.rest import TwilioRestClient
+from twilio.rest.exceptions import TwilioRestException
 
 from hc.lib import emails
 
@@ -77,12 +78,64 @@ class Sms(Transport):
                  settings.TWILIO_ACCOUNT_SID,
                  settings.TWILIO_AUTH_TOKEN
                  )
-        response = client.messages.create(body=message, to=to, from_=from_)
 
-        if response.error_message is None:
-            print("\nSMS Errors: None")
+        try:
+            response = client.messages.create(body=message, to=to, from_=from_)
+
+            if response.error_message is None:
+                print("\nSMS Errors: None")
+            else:
+                return response.error_message
+
+        except TwilioRestException as twilio_error:
+            print(twilio_error)
+
+
+class Telegram(Transport):
+    token = settings.TELEGRAM_BOT_TOKEN
+    url = "https://api.telegram.org/bot" + token
+
+    def send_notification(self, check):
+        response = requests.get(
+                    self.url + "/sendmessage?chat_id=" +
+                    str(self.channel.telegram_chat_id) +
+                    "&text=Hello, This is a notification sent by healthchecks.io : \
+                    \n\nThe check '{}' has gone {}.".format(
+                     check.name_then_code(),
+                     check.status.upper()
+                    )
+                   ).json()
+
+        if response['ok']:
+            print("\nTelegram notification sent")
         else:
-            return response.error_message
+            return (response['error_code'] + ": " + response['description'])
+
+    def notify(self, check):
+        if self.channel.telegram_verified:
+            self.send_notification(check)
+
+        else:
+            response = requests.get(self.url + "/getupdates").json()
+
+            if response['ok']:
+                for message in response['result']:
+                    username = message['message']['chat']['username']
+                    if username == self.channel.value.split('@')[1]:
+                        self.channel.telegram_verified = True
+                        self.channel.telegram_chat_id = (
+                            message['message']['chat']['id']
+                        )
+                        self.channel.save()
+
+            else:
+                return response['error_code'] + ": " + response['description']
+
+            if self.channel.telegram_verified:
+                self.send_notification(check)
+
+            else:
+                return "Telegram username not verified"
 
 
 class HttpTransport(Transport):
