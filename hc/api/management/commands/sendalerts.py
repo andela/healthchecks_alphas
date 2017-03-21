@@ -20,10 +20,8 @@ class Command(BaseCommand):
 
     def handle_many(self):
         """ Send alerts for many checks simultaneously. """
-        now = timezone.now()
         query = Check.objects.filter(user__isnull=False).select_related("user")
 
-<<<<<<< HEAD
         users_with_priorities = [
             profile.user for profile in
             Profile.objects.filter(
@@ -33,10 +31,7 @@ class Command(BaseCommand):
                                   users_with_priorities]
 
         now = timezone.now()
-=======
         nags = query.filter(status="down", nag_after__lt=now)
-
->>>>>>> 6672389e24e76d4a501360742392d0d2a5628063
         going_down = query.filter(alert_after__lt=now, status="up")
         checks = list(going_down.iterator()) + list(nags.iterator())
         if not nags:
@@ -65,17 +60,25 @@ class Command(BaseCommand):
         """
         check_owner = Profile.objects.get(user=check.user)
 
-<<<<<<< HEAD
         now = timezone.now()
 
         errors = []
         if not prioritize:
             check.status = check.get_status()
+            if check.status == "down":
+                check.update_nag()
+            check.status = check.get_status()
             # Save the new status. If sendalerts crashes,
             # it won't process this check again.
             check.save()
+
+            now = timezone.now()
             tmpl = "\nSending alert, status=%s, code=%s\n"
             self.stdout.write(tmpl % (check.status, check.code))
+            self.stdout.write( "alert_after: {} nag_after: {} nag: {} "
+                               "last_nag_alert: {}".format(
+                            check.alert_after, check.nag_after, check.nag,
+                            check.last_nag_alert))
             errors = check.send_alert()
 
         else:
@@ -100,22 +103,6 @@ class Command(BaseCommand):
                     check_owner.get_next_priority_number()
                 check_owner.save()
 
-=======
-        # Save the new status. If sendalerts crashes,
-        # it won't process this check again.
-        check.status = check.get_status()
-        if check.status == "down":
-            check.update_nag()
-        check.status = check.get_status()
-        check.save()
-
-        now = timezone.now()
-        tmpl = "\nSending alert, status=%s, code=%s\n"
-        self.stdout.write(tmpl % (check.status, check.code))
-        self.stdout.write("alert_after: {} nag_after: {} nag: {} last_nag_alert: {}".format(
-            check.alert_after, check.nag_after, check.nag, check.last_nag_alert))
-        errors = check.send_alert()
->>>>>>> 6672389e24e76d4a501360742392d0d2a5628063
         for ch, error in errors:
             self.stdout.write("ERROR: %s %s %s\n" % (ch.kind, ch.value, error))
 
