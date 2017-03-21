@@ -18,6 +18,10 @@ class BaseTestCase(TestCase):
         self.profile.team_access_allowed = True
         self.profile.save()
 
+        # Make alicea member of her own team
+        self.m_alice = Member(team=self.profile, user=self.alice)
+        self.m_alice.save()
+
         # Bob is on Alice's team and should have access to her stuff
         self.bob = User(username="bob", email="bob@example.org")
         self.bob.set_password("password")
@@ -27,8 +31,8 @@ class BaseTestCase(TestCase):
         self.bobs_profile.current_team = self.profile
         self.bobs_profile.save()
 
-        m = Member(team=self.profile, user=self.bob)
-        m.save()
+        self.m_bob = Member(team=self.profile, user=self.bob)
+        self.m_bob.save()
 
         # Charlie should have no access to Alice's stuff
         self.charlie = User(username="charlie", email="charlie@example.org")

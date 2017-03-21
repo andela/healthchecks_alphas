@@ -3,15 +3,17 @@
 import hashlib
 import json
 import uuid
-from datetime import timedelta as td
+from datetime import timedelta as td, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+
 from hc.api import transports
 from hc.lib import emails
+
 
 STATUSES = (
     ("up", "Up"),
@@ -53,6 +55,7 @@ class Check(models.Model):
     last_ping = models.DateTimeField(null=True, blank=True)
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
+    next_priority_notification = models.DateTimeField(null=True, blank=True)
     nag = models.DurationField(null=True)
     nag_after = models.DateTimeField(null=True, blank=True)
     last_nag_alert = models.DateTimeField(null=True, blank=True)
@@ -60,7 +63,6 @@ class Check(models.Model):
     def name_then_code(self):
         if self.name:
             return self.name
-
         return str(self.code)
 
     def url(self):
@@ -77,7 +79,30 @@ class Check(models.Model):
             raise NotImplementedError("Unexpected status: %s" % self.status)
 
         errors = []
+
         for channel in self.channel_set.all():
+            error = channel.notify(self)
+            if error not in ("", "no-op"):
+                errors.append((channel, error))
+
+        return errors
+
+    def send_priority_alert(self, member, priority_delay):
+        print("\n\n Sending Alert to Prioritized Member... \n")
+        # Only alert the next member in the priority list
+        if self.status not in ("up", "down"):
+            raise NotImplementedError("Unexpected status: %s" % self.status)
+
+        # reset next priority notification time first
+        now = timezone.now()
+        self.next_priority_notification = now + priority_delay
+        self.save()
+
+        errors = []
+
+        q = self.channel_set.all()
+        member_channels = q.filter(value=member.user.email)
+        for channel in member_channels:
             error = channel.notify(self)
             if error not in ("", "no-op"):
                 errors.append((channel, error))
@@ -212,6 +237,11 @@ class Channel(models.Model):
 
     def test(self):
         return self.transport().test()
+
+    def check_names(self):
+        return ', '.join([a.name for a in self.checks.all()])
+
+    check_names.short_description = "Check Names"
 
     @property
     def po_value(self):

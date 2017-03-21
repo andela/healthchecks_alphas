@@ -1,7 +1,10 @@
 import json
+from datetime import timedelta
 
 from django.core import mail
 from django.test import override_settings
+from django.utils import timezone
+
 from hc.api.models import Channel, Check, Notification
 from hc.test import BaseTestCase
 from mock import patch
@@ -13,6 +16,7 @@ class NotifyTestCase(BaseTestCase):
     def _setup_data(self, kind, value, status="down", email_verified=True):
         self.check = Check()
         self.check.status = status
+        self.check.name = "Alice test"
         self.check.user = self.alice
         self.check.save()
 
@@ -94,6 +98,8 @@ class NotifyTestCase(BaseTestCase):
 
     def test_email(self):
         self._setup_data("email", "alice@example.org")
+        self.check.last_ping = timezone.now() - timedelta(days=1, minutes=30)
+        self.check.save()
         self.channel.notify(self.check)
 
         n = Notification.objects.get()
@@ -116,6 +122,9 @@ class NotifyTestCase(BaseTestCase):
         self._setup_data("email", "alice@example.org", status="up")
         self.profile.team_access_allowed = False
         self.profile.save()
+
+        self.check.last_ping = timezone.now() - timedelta(days=1, minutes=30)
+        self.check.save()
 
         self.channel.notify(self.check)
 

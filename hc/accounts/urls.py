@@ -14,14 +14,14 @@ urlpatterns = [
         views.check_token, name="hc-check-token"),
 
     url(r'^profile/$', views.profile, name="hc-profile"),
-
+    url(r'^([\d]+)/member-checks/$', views.member_checks,
+        name="hc-update-member-checks"),
     url(r'^unsubscribe_reports/([\w-]+)/$',
         views.unsubscribe_reports, name="hc-unsubscribe-reports"),
 
     url(r'^set_password/([\w-]+)/$',
         views.set_password, name="hc-set-password"),
-
-   url(r'^switch_team/([\w-]+)/$',
+    url(r'^switch_team/([\w-]+)/$',
         views.switch_team, name="hc-switch-team"),
 
 

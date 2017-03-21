@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.urls import reverse
-from hc.accounts.models import Profile
+from hc.accounts.models import Profile, Member
 from hc.api.models import Channel, Check
 
 
@@ -16,10 +16,10 @@ class ProfileAdmin(admin.ModelAdmin):
         }
 
     list_display = ("id", "users", "reports_allowed", "next_report_date",
-                    "ping_log_limit", "report_duration")
+                    "ping_log_limit", "report_duration", "prioritize_notifications")
     search_fields = ["id", "user__email"]
     list_filter = ("reports_allowed", "team_access_allowed",
-                   "next_report_date")
+                   "next_report_date", "prioritize_notifications")
 
     def users(self, obj):
         if obj.member_set.count() == 0:
@@ -31,6 +31,17 @@ class ProfileAdmin(admin.ModelAdmin):
 
     users.allow_tags = True
 
+@admin.register(Member)
+class MemberAdmin(admin.ModelAdmin):
+
+    class Media:
+        css = {
+            'all': ('css/admin/profiles.css',)
+        }
+
+    list_display = ("team", "user", "priority", "allowed_check_names")
+    search_fields = ["team", "user", "priority", "allowed_check_names"]
+    list_filter = ("team", "user", "priority")
 
 class HcUserAdmin(UserAdmin):
     actions = ["send_report"]
@@ -73,6 +84,7 @@ class HcUserAdmin(UserAdmin):
             user.profile.send_report()
 
         self.message_user(request, "%d email(s) sent" % qs.count())
+
 
 
 admin.site.unregister(User)

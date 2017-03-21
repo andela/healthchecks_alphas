@@ -1,3 +1,4 @@
+from __future__ import print_function
 import json
 from datetime import timedelta as td
 from django.utils.timezone import now
@@ -39,7 +40,18 @@ class ListChecksTestCase(BaseTestCase):
         self.assertTrue("checks" in doc)
 
         checks = {check["name"]: check for check in doc["checks"]}
-        ### Assert the expected length of checks
+
+        assert len(checks) == 2
+        assert checks['Alice 1']['timeout'] == self.a1.timeout.total_seconds()
+        assert checks['Alice 1']['grace'] == self.a1.grace.total_seconds()
+        assert checks['Alice 1']['status'] == self.a1.status
+        assert checks['Alice 1']['n_pings'] == self.a1.n_pings
+
+        assert checks['Alice 2']['timeout'] == self.a2.timeout.total_seconds()
+        assert checks['Alice 2']['grace'] == self.a2.grace.total_seconds()
+        assert checks['Alice 2']['status'] == self.a2.status
+        assert checks['Alice 2']['n_pings'] == self.a2.n_pings
+
         ### Assert the checks Alice 1 and Alice 2's timeout, grace, ping_url, status,
         ### last_ping, n_pings and pause_url
 
@@ -52,5 +64,3 @@ class ListChecksTestCase(BaseTestCase):
         self.assertEqual(len(data["checks"]), 2)
         for check in data["checks"]:
             self.assertNotEqual(check["name"], "Bob 1")
-
-    ### Test that it accepts an api_key in the request

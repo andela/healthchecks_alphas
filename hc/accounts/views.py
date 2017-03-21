@@ -1,7 +1,9 @@
 import uuid
 import re
+import pprint
 
 from django.contrib import messages
+from datetime import timedelta as td
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import authenticate
@@ -9,16 +11,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.core import signing
-from django.http import HttpResponseForbidden, HttpResponseBadRequest
-from django.shortcuts import redirect, render
+from django.http import HttpResponseForbidden, HttpResponseBadRequest, HttpResponse, JsonResponse
+from django.shortcuts import redirect, render, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+
 from django.utils import timezone
 from hc.accounts.forms import (EmailPasswordForm, InviteTeamMemberForm,
                                RemoveTeamMemberForm, ReportSettingsForm,
                                SetPasswordForm, TeamNameForm)
 from hc.accounts.models import Profile, Member, REPORT_DURATIONS
+from hc.api.decorators import uuid_or_400
 from hc.api.models import Channel, Check
+from hc.front.templatetags.hc_extras import register
 from hc.lib.badges import get_badge_url
-
 
 
 def _make_user(email):
@@ -27,8 +32,12 @@ def _make_user(email):
     user.set_unusable_password()
     user.save()
 
-    profile = Profile(user=user)
-    profile.save()
+    user_profile = Profile(user=user)
+    user_profile.save()
+
+    # Make user a member of their own team
+    user_membership = Member(team=user_profile, user=user)
+    user_membership.save()
 
     channel = Channel()
     channel.user = user
@@ -133,48 +142,47 @@ def check_token(request, username, token):
 
 @login_required
 def profile(request):
-    profile = request.user.profile
-    # Switch user back to its default team 
-    if profile.current_team_id != profile.id:
-        request.team = profile
-        profile.current_team_id = profile.id
-        profile.save()
+    user_profile = request.user.profile
+    # Switch user back to its default team
+    if user_profile.current_team_id != user_profile.id:
+        request.team = user_profile
+        user_profile.current_team_id = user_profile.id
+        user_profile.save()
 
     show_api_key = False
     if request.method == "POST":
         if "set_password" in request.POST:
-            profile.send_set_password_link()
+            user_profile.send_set_password_link()
             return redirect("hc-set-password-link-sent")
         elif "create_api_key" in request.POST:
-            profile.set_api_key()
+            user_profile.set_api_key()
             show_api_key = True
             messages.success(request, "The API key has been created!")
         elif "revoke_api_key" in request.POST:
-            profile.api_key = ""
-            profile.save()
+            user_profile.api_key = ""
+            user_profile.save()
             messages.info(request, "The API key has been revoked!")
         elif "show_api_key" in request.POST:
             show_api_key = True
         elif "update_reports_allowed" in request.POST:
             form = ReportSettingsForm(request.POST)
             if form.is_valid():
-                print form.cleaned_data
-                profile.reports_allowed = True
+                user_profile.reports_allowed = True
                 if form.cleaned_data['report_duration'] == 'never':
-                    profile.reports_allowed = False
+                    user_profile.reports_allowed = False
                 elif form.cleaned_data['report_duration'] == 'daily':
-                    profile.report_duration = REPORT_DURATIONS[0][0]
+                    user_profile.report_duration = REPORT_DURATIONS[0][0]
                 elif form.cleaned_data['report_duration'] == 'weekly':
-                    profile.report_duration = REPORT_DURATIONS[1][0]
+                    user_profile.report_duration = REPORT_DURATIONS[1][0]
                 elif form.cleaned_data['report_duration'] == 'monthly':
-                    profile.report_duration = REPORT_DURATIONS[2][0]
+                    user_profile.report_duration = REPORT_DURATIONS[2][0]
                 else:
                     return HttpResponseBadRequest()
-                
-                profile.save()
+
+                user_profile.save()
                 messages.success(request, "Your settings have been updated!")
         elif "invite_team_member" in request.POST:
-            if not profile.team_access_allowed:
+            if not user_profile.team_access_allowed:
                 return HttpResponseForbidden()
 
             form = InviteTeamMemberForm(request.POST)
@@ -186,7 +194,8 @@ def profile(request):
                 except User.DoesNotExist:
                     user = _make_user(email)
 
-                profile.invite(user)
+                user_profile.invite(user)
+
                 messages.success(request, "Invitation to %s sent!" % email)
         elif "remove_team_member" in request.POST:
             form = RemoveTeamMemberForm(request.POST)
@@ -197,22 +206,85 @@ def profile(request):
                 farewell_user.profile.current_team = None
                 farewell_user.profile.save()
 
-                Member.objects.filter(team=profile,
-                                      user=farewell_user).delete()
+                # Remove user from channel integrations
+                farewell_user_channel = Channel.objects.filter(
+                        user=request.user, value=email)
+                for channel in farewell_user_channel:
+                    channel.delete()
 
+                Member.objects.get(team=user_profile,
+                                   user=farewell_user).delete()
                 messages.info(request, "%s removed from team!" % email)
+
         elif "set_team_name" in request.POST:
-            if not profile.team_access_allowed:
+            if not user_profile.team_access_allowed:
                 return HttpResponseForbidden()
 
             form = TeamNameForm(request.POST)
             if form.is_valid():
-                profile.team_name = form.cleaned_data["team_name"]
-                profile.save()
+                user_profile.team_name = form.cleaned_data["team_name"]
+                user_profile.save()
                 messages.success(request, "Team Name updated!")
 
+        elif "save_notification_priorities" in request.POST:
+            if not user_profile.team_access_allowed:
+                return HttpResponseForbidden()
+            data = dict(request.POST.iterlists())
+
+            emails = [str(i) for i in data.get('email')]
+            priorities = [int(i) for i in data.get('priority')]
+            priority_dict = dict(zip(emails, priorities))
+
+            try:
+                user_profile.priority_delay = td(seconds =(int(data.get('priority_delay')[0])))
+                checked = data.get('priority_notifications_allowed')
+                if checked:
+                    user_profile.prioritize_notifications = True
+                else:
+                    user_profile.prioritize_notifications = False
+
+                user_profile.save()
+                for email, priority in priority_dict.iteritems():
+                    user = User.objects.get(email=email)
+                    members = Member.objects.filter(
+                            team=user_profile, user=user)
+                    for member in members:
+                        member.priority = priority
+                        member.save()
+            except KeyError as e:
+                raise e
+            except Exception as e:
+                raise e
+        elif "set_allowed_checks" in request.POST:
+            new_checks = []
+            for key in request.POST:
+                if key.startswith("check-"):
+                    code = key[6:]
+                    try:
+                        check = Check.objects.get(code=code)
+                    except Check.DoesNotExist:
+                        return HttpResponseBadRequest()
+                    if check.user_id != request.team.user.id:
+                        return HttpResponseForbidden()
+                    new_checks.append(check)
+            member_user = User.objects.get(email=request.POST['email'])
+            member = Member.objects.filter(user=member_user, team=user_profile)
+            member[0].allowed_checks = new_checks
+
+            # Update channel allowed checks as well
+            channel_checks = Channel.objects.filter(
+                    user=request.team.user, value=member[0].user.email
+            )[0].checks.all()
+            union_checks = set(channel_checks) & set(new_checks)
+            channel_checks = Channel.objects.filter(
+                    user=request.team.user, value=member[0].user.email
+            )[0].checks = union_checks
+
     tags = set()
-    for check in Check.objects.filter(user=request.team.user):
+    checks = Check.objects.filter(user=request.team.user)
+    num_checks = len(checks)
+
+    for check in checks:
         tags.update(check.tags_list())
 
     username = request.team.user.username
@@ -223,14 +295,43 @@ def profile(request):
 
         badge_urls.append(get_badge_url(username, tag))
 
+
     ctx = {
         "page": "profile",
+        # "checks": list(checks),
         "badge_urls": badge_urls,
-        "profile": profile,
+        "profile": user_profile,
+        "num_checks": num_checks,
         "show_api_key": show_api_key
     }
 
     return render(request, "accounts/profile.html", ctx)
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
+
+
+@login_required
+# @uuid_or_400
+def member_checks(request, member_id):
+
+    # assert request.method == "POST"
+    user_profile = request.user.profile
+    member_user = User.objects.get(id=member_id)
+    member = Member.objects.get(
+            team=user_profile, user=member_user)
+    allowed_checks = member.allowed_checks.all()
+
+    checks = Check.objects.filter(user=request.team.user)
+
+    ctx = {
+        "checks": list(checks),
+        "assigned": list(allowed_checks),
+    }
+
+    return render(request, "accounts/member_checks.html", ctx)
 
 
 @login_required

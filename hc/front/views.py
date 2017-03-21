@@ -1,3 +1,4 @@
+from __future__ import print_function
 from collections import Counter
 from datetime import timedelta as td
 from itertools import tee
@@ -6,6 +7,7 @@ import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db.models import Count
 from django.http import Http404, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
@@ -13,6 +15,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.six.moves.urllib.parse import urlencode
+
+from hc.accounts.models import Profile, Member
 from hc.api.decorators import uuid_or_400
 from hc.api.models import DEFAULT_GRACE, DEFAULT_TIMEOUT, Channel, Check, Ping
 from hc.front.forms import (AddChannelForm, AddWebhookForm, NameTagsForm,
@@ -30,7 +34,16 @@ def pairwise(iterable):
 @login_required
 def my_checks(request):
     q = Check.objects.filter(user=request.team.user).order_by("created")
+    team_owner = Profile.objects.get(user=request.team.user)
+    member = Member.objects.filter(user=request.user, team=team_owner)
+
     checks = list(q)
+    if member:
+        allowed_member_checks = member[0].allowed_checks.all()
+        # If not team owner
+        if request.user != request.team.user:
+            checks = [check for check in checks if check in
+                      allowed_member_checks]
 
     counter = Counter()
     down_tags, grace_tags, nag_tags = set(), set(), set()
@@ -181,6 +194,7 @@ def update_name(request, code):
         return HttpResponseForbidden()
 
     form = NameTagsForm(request.POST)
+
     if form.is_valid():
         check.name = form.cleaned_data["name"]
         check.tags = form.cleaned_data["tags"]
@@ -204,6 +218,8 @@ def update_timeout(request, code):
         check.grace = td(seconds=form.cleaned_data["grace"])
         check.nag = td(seconds=form.cleaned_data["nag"])
         check.save()
+    else:
+        print("Invalid Form!: ", form.__dict__)
 
     return redirect("hc-checks")
 
@@ -315,14 +331,23 @@ def channels(request):
         channel.checks = new_checks
         return redirect("hc-channels")
 
-    channels = Channel.objects.filter(user=request.team.user).order_by("created")
+    channels = Channel.objects.filter(
+            user=request.team.user).order_by("created")
     channels = channels.annotate(n_checks=Count("checks"))
+
+    user_profile = request.user.profile
+    values_list = [channel.value for channel in channels]
+    members = {member.user.email: member.user.id for member in
+               Member.objects.filter(team=user_profile) if
+               member.user.email
+               in values_list}
 
     num_checks = Check.objects.filter(user=request.team.user).count()
 
     ctx = {
         "page": "channels",
         "channels": channels,
+        "members": members,
         "num_checks": num_checks,
         "enable_pushbullet": settings.PUSHBULLET_CLIENT_ID is not None,
         "enable_pushover": settings.PUSHOVER_API_TOKEN is not None
@@ -355,7 +380,7 @@ def add_channel(request):
 
 @login_required
 @uuid_or_400
-def channel_checks(request, code):
+def channel_checks(request, code, member_id):
     channel = get_object_or_404(Channel, code=code)
     if channel.user_id != request.team.user.id:
         return HttpResponseForbidden()
@@ -363,9 +388,15 @@ def channel_checks(request, code):
     assigned = set(channel.checks.values_list('code', flat=True).distinct())
     checks = Check.objects.filter(user=request.team.user).order_by("created")
 
+    if int(member_id):
+        member_user = User.objects.get(id=member_id)
+        allowed = list(Member.objects.get(user=member_user).allowed_checks.all())
+    else:
+        allowed = []
     ctx = {
         "checks": checks,
         "assigned": assigned,
+        "allowed": allowed,
         "channel": channel
     }
 

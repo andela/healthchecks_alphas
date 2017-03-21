@@ -20,15 +20,25 @@
         <th class="check-all-cell" colspan="2">
             Select / Unselect All
         </th>
+        <th class="check-all-cell"></th>
     </tr>
     {% for check in checks %}
-    <tr>
+
+    <tr {% if check not in allowed %}
+        class="disabled-element" {% endif %}
+    >
         <td>
+
             <input
                 type="checkbox"
-                class="toggle"
-                data-toggle="checkbox-x"
-                {% if check.code in assigned %} checked {% endif %}
+                {% if check not in allowed%} disabled readonly
+                    data-toggle="tooltip"
+                    title="Go to settings to enable this check for this member."
+                {% else %}
+                    data-toggle="checkbox-x"
+                    class="toggle"
+                    {% if check.code in assigned %} checked {% endif %}
+                {% endif %}
                 name="check-{{ check.code }}">
 
         </td>
@@ -42,8 +52,12 @@
         <td>
             <code>{{ check.code }}</code>
         </td>
+        <td>
+            {% if check not in allowed %} <i>(disabled for member)</i> {% endif %}
+        </td>
     </tr>
     {% endfor %}
+
 </table>
 
 <div class="modal-footer">

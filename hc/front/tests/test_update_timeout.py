@@ -7,10 +7,12 @@ class UpdateTimeoutTestCase(BaseTestCase):
     def setUp(self):
         super(UpdateTimeoutTestCase, self).setUp()
         self.check = Check(user=self.alice)
+        self.check.name = "Yo!"
         self.check.save()
 
     def test_it_works(self):
         url = "/checks/%s/timeout/" % self.check.code
+
         payload = {"timeout": 3600, "grace": 60, "nag": 3600}
 
         self.client.login(username="alice@example.org", password="password")

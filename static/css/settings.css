@@ -1,3 +1,7 @@
+li {
+    list-style: none;
+}
+
 .settings-title {
     padding-bottom: 24px;
 }
@@ -18,3 +22,82 @@
 .page-profile .icon-ok {
     color: #5cb85c;
 }
+
+@media (min-width: 768px) {
+    #set-priority-list-modal .modal-dialog {
+        width: 90%;
+    }
+}
+
+@media (min-width: 1100px) {
+    #set-priority-list-modal .modal-dialog {
+        width: 990px;
+    }
+}
+
+.move-cursor {
+    cursor: move;
+}
+
+#set-priority-list-modal ul {
+    min-height: 30px;
+    background: #EEE;
+}
+
+#priority-delay-slider.noUi-connect {
+    background: #228ebc;
+}
+
+#priority-delay-slider.noUi-connect {
+    margin: 20px 50px 80px 50px;
+}
+
+.update-timeout-value {
+    font-size: 22px;
+    display: inline-block;
+    width: 100px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.flex-wrapper {
+  display: flex;
+}
+
+.flex-wrapper .icon {
+    line-height: 39px;
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.flex-wrapper .icon.icon-cancel {
+    color: #d9534f;
+}
+
+table#team-members-table > tbody > tr > th {
+    border-top: 0;
+}
+
+.edit-checks {
+    border: 1px dotted #e5e5e5;
+}
+
+.edit-checks:hover {
+    background: #f9f9f9;
+}
+
+#team-members-table a{
+    text-decoration: none;
+}
+
+#team-members-table a.member-remove{
+    line-height: 40px;
+    font-size: 20px;
+    color: #555;
+}
+
+#team-members-table a.member-remove:hover{
+    color: #999;
+}
+
+

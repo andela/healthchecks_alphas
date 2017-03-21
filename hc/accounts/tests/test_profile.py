@@ -1,8 +1,9 @@
+from django.contrib.auth.models import User
 from django.core import mail
 from hc.accounts.models import Profile
 from hc.test import BaseTestCase
 from hc.accounts.models import Member
-from hc.api.models import Check
+from hc.api.models import Check, Channel
 
 
 class ProfileTestCase(BaseTestCase):
@@ -68,7 +69,7 @@ class ProfileTestCase(BaseTestCase):
         r = self.client.post("/accounts/profile/", form)
         assert r.status_code == 200
 
-        self.assertEqual(Member.objects.count(), 0)
+        self.assertEqual(Member.objects.count(), 1)
 
         self.bobs_profile.refresh_from_db()
         self.assertEqual(self.bobs_profile.current_team, None)
@@ -120,3 +121,11 @@ class ProfileTestCase(BaseTestCase):
         self.assertEqual(len(self.profile.api_key), 10)
         self.profile = Profile(user=self.bob, api_key="")
         self.assertEqual(len(self.profile.api_key), 0)
+
+    def test_adds_email_integration_to_team_owner_channel_on_new_member(self):
+        charlie_profile = Profile(user=self.charlie)
+        charlie_profile.save()
+        self.profile.invite(self.charlie)
+
+        assert Channel.objects.filter(
+                user=self.alice, value=self.charlie.email)

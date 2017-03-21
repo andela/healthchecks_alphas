@@ -8,7 +8,6 @@ from mock import patch
 
 
 class SendAlertsTestCase(BaseTestCase):
-
     @patch("hc.api.management.commands.sendalerts.Command.handle_one")
     def test_it_handles_few(self, mock):
         yesterday = timezone.now() - timedelta(days=1)
@@ -28,7 +27,6 @@ class SendAlertsTestCase(BaseTestCase):
             handled_names.append(args[0].name)
 
         assert set(names) == set(handled_names)
-        ### The above assert fails. Make it pass
 
     def test_it_handles_grace_period(self):
         check = Check(user=self.alice, status="up")
@@ -38,5 +36,3 @@ class SendAlertsTestCase(BaseTestCase):
 
         # Expect no exceptions--
         Command().handle_one(check)
-
-    ### Assert when Command's handle many that when handle_many should return True

@@ -28,8 +28,9 @@ class ChecksAdmin(admin.ModelAdmin):
         }
 
     search_fields = ["name", "user__email", "code"]
-    list_display = ("id", "name_tags", "created", "code", "status", "email",
-                    "last_ping", "n_pings")
+    list_display = ("id", "name_tags", "created", "code", "status", "get_status", "email",
+                    "last_ping", "n_pings", "nag",
+                    "next_priority_notification")
     list_select_related = ("user", )
     list_filter = ("status", OwnershipListFilter, "last_ping")
     actions = ["send_alert"]
@@ -147,7 +148,7 @@ class ChannelsAdmin(admin.ModelAdmin):
     search_fields = ["value", "user__email"]
     list_select_related = ("user", )
     list_display = ("id", "code", "email", "formatted_kind", "value",
-                    "num_notifications")
+                    "num_notifications", "check_names")
     list_filter = ("kind", )
 
     def email(self, obj):
