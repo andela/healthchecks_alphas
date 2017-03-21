@@ -23,7 +23,7 @@ DEFAULT_TIMEOUT = td(days=1)
 DEFAULT_GRACE = td(hours=1)
 DEFAULT_NAG = td(hours=1)
 CHANNEL_KINDS = (("email", "Email"), ("webhook", "Webhook"), ("sms", "SMS"),
-                 ("hipchat", "HipChat"),
+                 ("telegram", "Telegram"), ("hipchat", "HipChat"),
                  ("slack", "Slack"), ("pd", "PagerDuty"), ("po", "Pushover"),
                  ("victorops", "VictorOps"))
 
@@ -157,6 +157,8 @@ class Channel(models.Model):
     kind = models.CharField(max_length=20, choices=CHANNEL_KINDS)
     value = models.TextField(blank=True)
     email_verified = models.BooleanField(default=False)
+    telegram_verified = models.BooleanField(default=False)
+    telegram_chat_id = models.IntegerField(default=0)
     checks = models.ManyToManyField(Check)
 
     def assign_all_checks(self):
@@ -180,6 +182,8 @@ class Channel(models.Model):
             return transports.Email(self)
         elif self.kind == "sms":
             return transports.Sms(self)
+        elif self.kind == "telegram":
+            return transports.Telegram(self)
         elif self.kind == "webhook":
             return transports.Webhook(self)
         elif self.kind == "slack":
